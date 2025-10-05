@@ -2,21 +2,47 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package java.itstep.LVL.data.dto;
+package proj.itstep.lvl.data.dto;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class UserAccess {
+
     private UUID id;
     private UUID userId;
     private String roleId;
     private String login;
     private String salt;
     private String dk;
-    
-    public static UserAccess fromResultSet(ResultSet rs) {
-        return null;
+
+    private User user;
+
+    public static UserAccess fromResultSet(ResultSet rs) throws SQLException {
+        UserAccess ua = new UserAccess();
+        ua.setId(UUID.fromString(rs.getString("id")));
+        ua.setUserId(UUID.fromString(rs.getString("user_id")));
+        ua.setRoleId(rs.getString("role_id"));
+        ua.setLogin(rs.getString("login"));
+        ua.setSalt(rs.getString("salt"));
+        ua.setDk(rs.getString("dk"));
+
+        try {
+            ua.setUser(User.fromResultSet(rs));
+        } catch (SQLException ignore) {
+
+        }
+
+        return ua;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public UUID getId() {
@@ -66,7 +92,5 @@ public class UserAccess {
     public void setDk(String dk) {
         this.dk = dk;
     }
-    
-    
 }
 

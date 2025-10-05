@@ -1,4 +1,4 @@
-package java.itstep.lvl.resources;
+package proj.itstep.lvl.resources;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

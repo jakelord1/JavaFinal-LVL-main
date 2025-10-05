@@ -60,13 +60,46 @@ function AuthModal() {
 
         const userPass = login + ':' + password;
         const credentials = Base64.encode(userPass);
-        fetch("", {
+        fetch("http://localhost:8080/LVL/user", {
             method: 'GET',
             headers: {
                 'Authorization': 'Basic ' + credentials,
             }
         }).then(r => r.json()).then(console.log).catch(console.error);
     };
+
+    const onPost = () => {
+        fetch("http://localhost:8080/LVL/user", {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Basic 123 ',
+                'Content-Type': 'application/json'
+            }
+        }).then(r => r.json()).then(console.log).catch(console.error);
+    };
+
+    const onPut = () => {
+        fetch("http://localhost:8080/LVL/user", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(r => r.json()).then(console.log).catch(console.error);
+    };
+
+    const onPatch = () => {
+        fetch("http://localhost:8080/LVL/user", {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' }
+        }).then(r => r.json()).then(console.log).catch(console.error);
+    };
+
+    const onDelete = () => {
+        fetch("http://localhost:8080/LVL/user", {
+            method: 'DELETE'
+        }).then(r => r.json()).then(console.log).catch(console.error);
+    };
+
 
     return         <div className="modal fade" id="authModal" tabIndex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
             <div className="modal-dialog">
@@ -89,8 +122,12 @@ function AuthModal() {
                     </form>
                 </div>
                 <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                    <button type="submit" form="auth-form" className="btn btn-primary" >Вход</button>
+                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="submit" form="auth-form" className="btn btn-primary" >Вхід</button>
+                    <button onClick={onPost} type="button" className="btn btn-secondary">POST</button>
+                    <button onClick={onPut} type="button" className="btn btn-secondary">PUT</button>
+                    <button onClick={onPatch} type="button" className="btn btn-secondary">PATCH</button>
+                    <button onClick={onDelete} type="button" className="btn btn-danger">DELETE</button>
                 </div>
                 </div>
             </div>

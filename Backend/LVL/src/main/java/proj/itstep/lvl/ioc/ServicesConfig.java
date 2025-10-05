@@ -1,14 +1,14 @@
-package java.itstep.LVL.ioc;
+package proj.itstep.lvl.ioc;
 
 import com.google.inject.AbstractModule;
-import java.itstep.LVL.services.config.ConfigService;
-import java.itstep.LVL.services.config.JsonConfigService;
-import java.itstep.LVL.services.hash.HashService;
-import java.itstep.LVL.services.hash.Md5HashService;
-import java.itstep.LVL.services.kdf.KdfService;
-import java.itstep.LVL.services.kdf.PbKdf1Service;
-import java.itstep.LVL.services.timestamp.TimestampService;
-import java.itstep.LVL.services.timestamp.UnixSecondsTimestampService;
+import proj.itstep.lvl.services.config.ConfigService;
+import proj.itstep.lvl.services.config.JsonConfigService;
+import proj.itstep.lvl.services.hash.HashService;
+import proj.itstep.lvl.services.hash.Md5HashService;
+import proj.itstep.lvl.services.kdf.KdfService;
+import proj.itstep.lvl.services.kdf.PbKdf1Service;
+import proj.itstep.lvl.services.timestamp.TimestampService;
+import proj.itstep.lvl.services.timestamp.UnixSecondsTimestampService;
 
 public class ServicesConfig extends AbstractModule {
     @Override

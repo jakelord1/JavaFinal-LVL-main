@@ -1,4 +1,4 @@
-package java.itstep.LVL.ioc;
+package proj.itstep.lvl.ioc;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

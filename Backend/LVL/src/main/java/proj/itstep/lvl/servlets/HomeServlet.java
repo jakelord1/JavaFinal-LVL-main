@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package java.itstep.LVL.servlets;
+package proj.itstep.lvl.servlets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import jakarta.servlet.ServletException;
@@ -12,9 +12,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.itstep.LVL.data.DataAccessor;
-import java.itstep.LVL.services.kdf.KdfService;
-import java.itstep.LVL.services.timestamp.TimestampService;
+import proj.itstep.lvl.data.DataAccessor;
+import proj.itstep.lvl.services.kdf.KdfService;
+import proj.itstep.lvl.services.timestamp.TimestampService;
 
 @Singleton
 public class HomeServlet extends HttpServlet {

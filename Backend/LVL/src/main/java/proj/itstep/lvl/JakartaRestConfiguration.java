@@ -1,4 +1,4 @@
-package java.itstep.LVL;
+package proj.itstep.lvl;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

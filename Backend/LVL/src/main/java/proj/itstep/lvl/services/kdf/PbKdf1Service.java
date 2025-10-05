@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package java.itstep.LVL.services.kdf;
+package proj.itstep.lvl.services.kdf;
 
 import com.google.inject.Inject;
-import java.itstep.LVL.services.hash.HashService;
+import proj.itstep.lvl.services.hash.HashService;
 
 public class PbKdf1Service implements KdfService {
     private final HashService hashService;
