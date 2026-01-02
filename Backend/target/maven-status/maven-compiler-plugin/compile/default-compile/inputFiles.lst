@@ -1,0 +1,17 @@
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\data\dao\DataAccesor.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\data\dao\IngredientsDAO.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\data\dao\Recipe_PositionsDAO.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\data\dao\RecipesDAO.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\data\dto\Ingredients.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\data\dto\Recipe_Positions.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\data\dto\Recipes.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\ioc\IocContextListener.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\ioc\ServicesConfig.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\ioc\ServletsConfig.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\JakartaRestConfiguration.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\resources\JakartaEE11Resource.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\services\config\ConfigService.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\services\config\JsonConfigService.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\servlets\IngredientsServlet.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\servlets\Recipe_PositionsServlet.java
+G:\Univer\JavaFinal-LVL-main\JavaFinal-LVL-main\Backend\src\main\java\com\itstep\homecook\servlets\RecipesServlet.java

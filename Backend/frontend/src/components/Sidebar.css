@@ -1,0 +1,138 @@
+/* Modern Sidebar Styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  background: white;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.03);
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: all 0.3s ease;
+  border-right: 1px solid #f1f5f9;
+}
+
+.sidebar-header {
+  padding: 0 1.5rem 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.logo:hover {
+  color: var(--primary-color);
+}
+
+.logo-icon {
+  margin-right: 0.75rem;
+  color: var(--primary-color);
+}
+
+.logo-text {
+  margin-left: 0.5rem;
+}
+
+.sidebar-menu {
+  padding: 0.5rem 1rem;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background-color: #e2e8f0;
+  border-radius: 20px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  margin: 0.25rem 0;
+  border-radius: var(--border-radius);
+  color: #64748b;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item:hover {
+  background-color: #f8fafc;
+  color: var(--primary-color);
+}
+
+.nav-item.active {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.nav-item.active .nav-icon {
+  color: var(--primary-color);
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  color: #94a3b8;
+  transition: all 0.2s ease;
+}
+
+.nav-text {
+  transition: all 0.2s ease;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: var(--primary-color);
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+  border-radius: 0 4px 4px 0;
+}
+
+.nav-item.active::before {
+  transform: scaleY(1);
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.mobile-visible {
+    transform: translateX(0);
+  }
+}

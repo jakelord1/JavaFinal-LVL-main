@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
+
+    <TextView
+        android:id="@+id/match_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/matched_recipes"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnBackground"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/match_count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="12sp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintTop_toBottomOf="@id/match_header"
+        tools:text="6 recipes found" />
+
+    <TextView
+        android:id="@+id/detected_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/detected_ingredients"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/match_count" />
+
+    <TextView
+        android:id="@+id/detected_ingredients"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="12sp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintTop_toBottomOf="@id/detected_label"
+        tools:text="tomato, cucumber, dill" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/match_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/detected_ingredients"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:listitem="@layout/item_match_recipe" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

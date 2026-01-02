@@ -1,0 +1,155 @@
+.recipe-accordion .accordion-item {
+  margin-bottom: 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid #e2e8f0;
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.recipe-accordion .accordion-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.recipe-accordion .accordion-header {
+  padding: 0;
+  margin: 0;
+}
+
+.recipe-accordion .accordion-button {
+  font-weight: 600;
+  color: #1e293b;
+  background-color: #ffffff;
+  padding: 1.25rem 1.5rem;
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.recipe-accordion .accordion-button:not(.collapsed) {
+  color: var(--primary-color);
+  background-color: #ffffff;
+  box-shadow: none;
+}
+
+.recipe-accordion .accordion-button:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(74, 108, 247, 0.15);
+}
+
+.recipe-accordion .accordion-button::after {
+  background-size: 1.25rem;
+  opacity: 0.5;
+  transition: transform 0.2s ease;
+}
+
+.recipe-accordion .accordion-body {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Recipe Actions */
+.recipe-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-right: 2.5rem;
+}
+
+.recipe-actions .btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.recipe-actions .btn i {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.recipe-actions .btn-outline-primary {
+  color: var(--primary-color);
+  border-color: #e2e8f0;
+  background-color: #ffffff;
+}
+
+.recipe-actions .btn-outline-primary:hover {
+  background-color: var(--primary-light);
+  border-color: var(--primary-color);
+}
+
+.recipe-actions .btn-outline-danger {
+  color: #ef4444;
+  border-color: #fee2e2;
+  background-color: #ffffff;
+}
+
+.recipe-actions .btn-outline-danger:hover {
+  background-color: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.recipe-accordion .accordion-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-right: 1rem;
+  gap: 1rem;
+}
+
+.recipe-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 1rem;
+}
+
+.recipe-actions {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-right: 0;
+}
+
+.recipe-accordion .badge {
+  font-weight: 500;
+  padding: 0.4em 0.8em;
+  border-radius: 6px;
+  font-size: 0.85em;
+  letter-spacing: 0.02em;
+}
+
+.recipe-detail {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.recipe-detail:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.recipe-detail strong {
+  color: #334155;
+  margin-right: 0.5rem;
+}
+
+.recipe-fulltext {
+  white-space: pre-line;
+  line-height: 1.7;
+  color: #334155;
+}

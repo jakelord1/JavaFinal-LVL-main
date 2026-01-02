@@ -1,0 +1,17 @@
+com\itstep\homecook\data\dao\IngredientsDAO.class
+com\itstep\homecook\data\dao\Recipe_PositionsDAO.class
+com\itstep\homecook\data\dto\Recipes.class
+com\itstep\homecook\ioc\ServicesConfig.class
+com\itstep\homecook\ioc\IocContextListener.class
+com\itstep\homecook\ioc\ServletsConfig.class
+com\itstep\homecook\resources\JakartaEE11Resource.class
+com\itstep\homecook\data\dao\RecipesDAO.class
+com\itstep\homecook\data\dto\Recipe_Positions.class
+com\itstep\homecook\servlets\IngredientsServlet.class
+com\itstep\homecook\services\config\ConfigService.class
+com\itstep\homecook\data\dto\Ingredients.class
+com\itstep\homecook\servlets\RecipesServlet.class
+com\itstep\homecook\data\dao\DataAccesor.class
+com\itstep\homecook\services\config\JsonConfigService.class
+com\itstep\homecook\servlets\Recipe_PositionsServlet.class
+com\itstep\homecook\JakartaRestConfiguration.class

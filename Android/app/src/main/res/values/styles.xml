@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemActiveIndicatorStyle">@style/Widget.App.BottomNavigationView.ActiveIndicator</item>
+    </style>
+    
+    <style name="Widget.App.BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:width">0dp</item>
+        <item name="android:height">0dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.BottomNavigationView.ActiveIndicator</item>
+    </style>
+    
+    <style name="ShapeAppearance.App.BottomNavigationView.ActiveIndicator" parent="ShapeAppearance.Material3.CornerExtraSmall">
+        <item name="cornerSize">0dp</item>
+    </style>
+</resources>
+
