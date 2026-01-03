@@ -105,7 +105,7 @@ const RecipeForm = () => {
       });
       console.log('Creating new recipe:', newRecipe);
       console.log('Creating new recipe positions:', currentRecipePositions);
-        fetch(`http://localhost:8080/homecook/recipes`, {
+        fetch(`http://localhost:8080/homecook/recipes?action=create`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newRecipe),

@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 
 
 @Singleton
@@ -50,17 +52,27 @@ public class RecipesServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Recipes recipes = new Gson().fromJson(req.getReader(), Recipes.class);
-        recipesDAO.add(recipes);
-        int new_id = recipesDAO.getName(recipes.getDish_name());
-        for (Recipe_Positions pos : recipes.getRecipe_positions()) {
-            pos.setIngredient(new Ingredients(pos.getIngredient_id(), null, null, null));
-            pos.setRecipe(recipes);
-            pos.getRecipe().setId(new_id);
-            recipePositionsDAO.add(pos);
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException { 
+        String action = req.getParameter("action");
+        Gson gson = new Gson();
+
+        if ("search".equals(action)) {
+            Type listType = new TypeToken<List<Recipe_Positions>>(){}.getType();
+            List<Recipe_Positions> searchPositions = gson.fromJson(req.getReader(), listType);
+            List<Recipes> foundRecipes = recipesDAO.findMatchingRecipes(searchPositions);
+            resp.getWriter().write(gson.toJson(foundRecipes));
+        } else {
+            Recipes recipes = new Gson().fromJson(req.getReader(), Recipes.class);
+            recipesDAO.add(recipes);
+            int new_id = recipesDAO.getName(recipes.getDish_name());
+            for (Recipe_Positions pos : recipes.getRecipe_positions()) {
+                pos.setIngredient(new Ingredients(pos.getIngredient_id(), null, null, null));
+                pos.setRecipe(recipes);
+                pos.getRecipe().setId(new_id);
+                recipePositionsDAO.add(pos);
+            }
+            resp.setStatus(HttpServletResponse.SC_CREATED);
         }
-        resp.setStatus(HttpServletResponse.SC_CREATED);
     }
 
     @Override

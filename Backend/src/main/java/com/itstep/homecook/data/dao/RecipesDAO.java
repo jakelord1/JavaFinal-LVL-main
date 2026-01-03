@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 import com.itstep.homecook.data.dto.Recipe_Positions;
 import com.itstep.homecook.data.dto.Recipes;
@@ -72,12 +74,11 @@ public class RecipesDAO {
         return null;
     }
 
-    public List<Integer> findMatchingRecipes(List<Recipe_Positions> recipePositions) {
-        List<Integer> result = new ArrayList<>();
+    public List<Recipes> findMatchingRecipes(List<Recipe_Positions> recipePositions) {
+        List<Recipes> result = new ArrayList<>();
         if (recipePositions == null || recipePositions.isEmpty()) {
             return result;
         }
-
         List<Integer> ingredientIds = recipePositions.stream()
                 .map(Recipe_Positions::getIngredient_id)
                 .distinct()
@@ -86,27 +87,66 @@ public class RecipesDAO {
                 .map(id -> "?")
                 .collect(Collectors.joining(","));
                 
-        String sql = "SELECT rec.id " +
-                    "FROM Recipes rec " +
-                    "JOIN Recipe_Positions rp ON rp.recipe_id = rec.id " +
-                    "GROUP BY rec.id " +
-                    "HAVING SUM(CASE WHEN rp.ingredient_id NOT IN (" + placeholders + ") THEN 1 ELSE 0 END) = 0 " +
-                    "   AND SUM(CASE WHEN rp.ingredient_id IN (" + placeholders + ") THEN 1 ELSE 0 END) > 0";
+        String findIdsSql = "SELECT rec.id " +
+            "FROM Recipes rec " +
+            "JOIN Recipe_Positions rp ON rp.recipe_id = rec.id " +
+            "GROUP BY rec.id " +
+            "HAVING SUM(CASE WHEN rp.ingredient_id NOT IN (" + placeholders + ") THEN 1 ELSE 0 END) = 0 " +
+            "   AND SUM(CASE WHEN rp.ingredient_id IN (" + placeholders + ") THEN 1 ELSE 0 END) > 0";
 
-        try (PreparedStatement prep = connection.prepareStatement(sql)) {
+    try {
+        List<Integer> ids = new ArrayList<>();
+        try (PreparedStatement prep = connection.prepareStatement(findIdsSql)) {
             int index = 1;
-            for (Integer id : ingredientIds) {
-                prep.setInt(index++, id);
-            }
-            for (Integer id : ingredientIds) {
-                prep.setInt(index++, id);
-            }
+            for (Integer id : ingredientIds) prep.setInt(index++, id); // Для NOT IN
+            for (Integer id : ingredientIds) prep.setInt(index++, id); // Для IN
 
             try (ResultSet rs = prep.executeQuery()) {
-                while (rs.next()) {
-                    result.add(rs.getInt("id"));
+                while (rs.next()) ids.add(rs.getInt("id"));
+            }
+        }
+
+        if (!ids.isEmpty()) {
+            String idsPlaceholders = ids.stream().map(id -> "?").collect(Collectors.joining(","));
+            
+            String fetchSql = "SELECT * FROM Recipes rec " +
+                    "INNER JOIN Recipe_Positions rec_pos ON rec_pos.recipe_id = rec.id " +
+                    "INNER JOIN Ingredients ing ON ing.id = rec_pos.ingredient_id " +
+                    "WHERE rec.id IN (" + idsPlaceholders + ")";
+
+            Map<Integer, Recipes> recipeMap = new LinkedHashMap<>();
+
+            try (PreparedStatement fetchPrep = connection.prepareStatement(fetchSql)) {
+                int index = 1;
+                for (Integer id : ids) fetchPrep.setInt(index++, id);
+
+                try (ResultSet rs = fetchPrep.executeQuery()) {
+                    while (rs.next()) {
+                        int rId = rs.getInt("id");
+
+                        if (!recipeMap.containsKey(rId)) {
+                            Recipes r = new Recipes(
+                                null,
+                                rs.getInt("id"),
+                                rs.getString("dish_name"),
+                                rs.getInt("cook_time"),
+                                rs.getString("dish_shorttext"),
+                                rs.getString("recipe_fulltext"),
+                                rs.getString("category"),
+                                rs.getString("image")
+                            );
+                            r.setRecipe_positions(new ArrayList<>());
+                            recipeMap.put(rId, r);
+                        }
+
+                        Recipe_Positions pos = Recipe_Positions.fromResultSet(rs);
+                        pos.setRecipe(null);
+                        recipeMap.get(rId).getRecipe_positions().add(pos);
+                    }
                 }
             }
+            result.addAll(recipeMap.values());
+        }
         } catch (SQLException ex) {
             logger.warning("RecipesDAO::findMatchingRecipes " + ex.getMessage());
         }
