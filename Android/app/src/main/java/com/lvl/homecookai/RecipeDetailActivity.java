@@ -1,52 +1,112 @@
 package com.lvl.homecookai;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.lvl.homecookai.ApiSetup.ApiAccess;
+import com.lvl.homecookai.ApiSetup.MethodsToApi;
+import com.lvl.homecookai.database.Ingredient;
+import com.lvl.homecookai.database.Recipe;
+import com.lvl.homecookai.database.Recipe_Position;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class RecipeDetailActivity extends AppCompatActivity {
 
-    public static final String EXTRA_RECIPE_NAME = "recipe_name";
-    public static final String EXTRA_RECIPE_INGREDIENTS = "recipe_ingredients";
-    public static final String EXTRA_RECIPE_TIME = "recipe_time";
-    public static final String EXTRA_RECIPE_INSTRUCTIONS = "recipe_instructions";
-    public static final String EXTRA_RECIPE_IMAGE = "recipe_image";
+    private ImageView recipeImage;
+    private TextView recipeTitleText;
+    private TextView ingredientsText;
+    private TextView timeText;
+    private TextView instructionsText;
+
+    private MethodsToApi api;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
 
-        String recipeName = getIntent().getStringExtra(EXTRA_RECIPE_NAME);
-        String ingredients = getIntent().getStringExtra(EXTRA_RECIPE_INGREDIENTS);
-        String time = getIntent().getStringExtra(EXTRA_RECIPE_TIME);
-        String instructions = getIntent().getStringExtra(EXTRA_RECIPE_INSTRUCTIONS);
-        int imageResId = getIntent().getIntExtra(EXTRA_RECIPE_IMAGE, R.drawable.ic_launcher_foreground);
+        recipeImage = findViewById(R.id.recipe_image);
+        recipeTitleText = findViewById(R.id.recipe_title);
+        ingredientsText = findViewById(R.id.ingredients_text);
+        timeText = findViewById(R.id.time_text);
+        instructionsText = findViewById(R.id.instructions_text);
+        try {
 
-        ImageView recipeImage = findViewById(R.id.recipe_image);
-        TextView recipeTitleText = findViewById(R.id.recipe_title);
-        TextView ingredientsText = findViewById(R.id.ingredients_text);
-        TextView timeText = findViewById(R.id.time_text);
-        TextView instructionsText = findViewById(R.id.instructions_text);
 
-        recipeImage.setImageResource(imageResId);
-        recipeTitleText.setText(recipeName);
-        ingredientsText.setText(ingredients);
-        timeText.setText(time);
-        instructionsText.setText(instructions);
+        //int recipeId = getIntent().getIntExtra("recipe_id", 0);
+        int recipeId = 6;
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(recipeName);
-        }
+        api = ApiAccess.getClient().create(MethodsToApi.class);
+
+        api.getRecipe("id", recipeId).enqueue(new Callback<Recipe>() {
+            @Override
+            public void onResponse(Call<Recipe> call, Response<Recipe> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Recipe recipe = response.body();
+
+                    recipeTitleText.setText(recipe.getDish_name());
+                    timeText.setText(recipe.getCook_time() + " мин");
+                    instructionsText.setText(recipe.getRecipe_fulltext());
+
+                    StringBuilder ingredientsBuilder = new StringBuilder();
+                    if (recipe.getRecipe_positions() != null) {
+                        for (Recipe_Position pos : recipe.getRecipe_positions()) {
+                            Ingredient ing = pos.getIngredient();
+                            if (ing != null) {
+                                ingredientsBuilder.append("- ")
+                                        .append(ing.getName())
+                                        .append(" ")
+                                        .append(pos.getAmount())
+                                        .append(" ")
+                                        .append(pos.getUnit() != null ? pos.getUnit() : "")
+                                        .append("\n");
+                            }
+                        }
+                    }
+                    ingredientsText.setText(ingredientsBuilder.toString());
+
+                    Glide.with(RecipeDetailActivity.this)
+                            .load(recipe.getImage())
+                            .placeholder(R.drawable.ic_launcher_foreground)
+                            .into(recipeImage);
+
+                    // ActionBar
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                        getSupportActionBar().setTitle(recipe.getDish_name());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Recipe> call, Throwable t) {
+                Toast.makeText(RecipeDetailActivity.this,
+                        "Ошибка загрузки рецепта", Toast.LENGTH_SHORT).show();
+                Log.e("API_ERROR", "Ошибка при запросе рецепта: " + t.getMessage(), t);
+
+                // 3. Можно добавить проверку на тип ошибки, чтобы понять, что именно случилось
+                if (t instanceof java.io.IOException) {
+                    Log.e("API_ERROR", "Проблема с сетью или сервером");
+                } else {
+                    Log.e("API_ERROR", "Ошибка конвертации данных (GSON)");
+                }
+            }
+        });
     }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
+        catch (Exception exception) {
+            Log.e("Debug",exception.getMessage(), exception);
+        }
     }
 }

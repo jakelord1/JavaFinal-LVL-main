@@ -73,7 +73,7 @@
                 android:id="@+id/recipe_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Pasta Carbonara"
+                android:text=""
                 android:textSize="36sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"

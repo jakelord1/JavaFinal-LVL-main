@@ -47,12 +47,16 @@ android {
 
 dependencies {
     implementation(libs.appcompat)
-    implementation(libs.material)
+    implementation("com.google.android.material:material:1.11.0")
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation(libs.guava)
     implementation(libs.room.runtime)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
     annotationProcessor(libs.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

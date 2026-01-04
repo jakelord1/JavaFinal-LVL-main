@@ -12,7 +12,7 @@ const Recipes = () => {
   const page = 0;
 
   useEffect(() => {
-      fetch(`${API_URL}:8080/homecook/recipes?page=${page}`, {
+      fetch(`${API_URL}:8080/homecook/recipes?type=all&page=${page}`, {
         method: 'GET',
       })
         .then((res) => {
@@ -21,7 +21,7 @@ const Recipes = () => {
         })
         .then((data: Recipe[]) => setRecipes(data))
         .catch((err) => console.error(err));
-    }, []);
+    }, [page]);
 
   const handleDelete = (e: React.MouseEvent, id: number) => {
     e.stopPropagation();

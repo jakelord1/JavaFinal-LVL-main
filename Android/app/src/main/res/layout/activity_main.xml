@@ -7,8 +7,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
     tools:context=".MainActivity">
-
-    <!-- Header with Title and Profile -->
+    
     <LinearLayout
         android:id="@+id/header_layout"
         android:layout_width="match_parent"
@@ -47,7 +46,6 @@
 
     </LinearLayout>
 
-    <!-- Search Bar -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/search_card"
         android:layout_width="0dp"
@@ -75,7 +73,6 @@
             app:boxStrokeWidth="0dp"
             app:hintEnabled="false"
             app:startIconDrawable="@drawable/ic_search"
-            app:startIconPadding="12dp"
             app:startIconTint="#999999">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -99,7 +96,6 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Recently Scanned Section -->
     <LinearLayout
         android:id="@+id/recently_scanned_container"
         android:layout_width="0dp"
@@ -253,7 +249,6 @@
 
     </LinearLayout>
 
-    <!-- Popular Categories Section -->
     <LinearLayout
         android:id="@+id/popular_categories_container"
         android:layout_width="0dp"
@@ -395,7 +390,6 @@
 
     </LinearLayout>
 
-    <!-- Recommended for You Section -->
     <LinearLayout
         android:id="@+id/recommended_for_you_container"
         android:layout_width="0dp"
@@ -590,10 +584,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        app:itemActiveIndicatorColor="@android:color/transparent"
-        app:itemActiveIndicatorEnabled="false"
-        app:itemActiveIndicatorHeight="0dp"
-        app:itemActiveIndicatorWidth="0dp"
         app:itemBackground="@android:color/transparent"
         app:itemIconTint="@color/bottom_nav_color_selector"
         app:itemRippleColor="@android:color/transparent"
@@ -610,14 +600,14 @@
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="94dp"
         android:contentDescription="@string/scan_food"
-        android:text="Scan Food"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
         android:shadowColor="#FFFFFF"
         android:shadowDx="0.4"
         android:shadowDy="0.4"
         android:shadowRadius="0.8"
+        android:text="Scan Food"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:textStyle="bold"
         app:backgroundTint="@color/purple_dark"
         app:cornerRadius="25dp"
         app:icon="@drawable/ic_scan_qrcode"

@@ -69,9 +69,9 @@ public class MatchResultsAdapter extends RecyclerView.Adapter<MatchResultsAdapte
         }
 
         void bind(RecipeMatch match, OnRecipeClickListener listener) {
-            recipeName.setText(match.recipe.name);
-            recipeTime.setText(match.recipe.time);
-            recipeImage.setImageResource(match.recipe.imageResId);
+//            recipeName.setText(match.recipe.name);
+//            recipeTime.setText(match.recipe.time);
+//            recipeImage.setImageResource(match.recipe.imageResId);
             matchPercent.setText(itemView.getContext().getString(
                     R.string.match_percent_format, match.matchPercent));
 

@@ -34,7 +34,7 @@ public class RecipesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         String typeParam = req.getParameter("type");
-        if (typeParam == "id") {
+        if (typeParam.equals("id")) {
             String idParam = req.getParameter("id");
             int id = Integer.parseInt(idParam);
             Recipes recipe = recipesDAO.getId(id);
@@ -42,12 +42,15 @@ public class RecipesServlet extends HttpServlet {
             resp.setContentType("application/json");
             resp.getWriter().write(json);
         }
-        else if (typeParam == "all") {
+        else if (typeParam.equals("all")) {
             int page = Integer.parseInt(req.getParameter("page"));
             List<Recipes> recipes = recipesDAO.getAll(page);
             String json = new Gson().toJson(recipes);
             resp.setContentType("application/json");
             resp.getWriter().write(json);
+        }
+        else {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 

@@ -55,11 +55,11 @@ public class HistoryFragment extends Fragment {
 
     private void openRecipeDetail(Recipe recipe) {
         Intent intent = new Intent(requireContext(), RecipeDetailActivity.class);
-        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_NAME, recipe.name);
-        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_INGREDIENTS, recipe.ingredients);
-        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_TIME, recipe.time);
-        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_INSTRUCTIONS, recipe.instructions);
-        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_IMAGE, recipe.imageResId);
+//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_NAME, recipe.name);
+//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_INGREDIENTS, recipe.ingredients);
+//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_TIME, recipe.time);
+//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_INSTRUCTIONS, recipe.instructions);
+//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_IMAGE, recipe.imageResId);
         startActivity(intent);
     }
 

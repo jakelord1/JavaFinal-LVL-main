@@ -69,9 +69,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         }
 
         void bind(Recipe recipe, OnRecipeClickListener listener) {
-            recipeName.setText(recipe.name);
-            recipeTime.setText(recipe.time);
-            recipeImage.setImageResource(recipe.imageResId);
+            recipeName.setText(recipe.getDish_name());
+            recipeTime.setText(recipe.getCook_time());
+            //recipeImage.setImageResource(recipe.imageResId);
 
             View.OnClickListener clickListener = v -> listener.onRecipeClick(recipe);
             itemView.setOnClickListener(clickListener);

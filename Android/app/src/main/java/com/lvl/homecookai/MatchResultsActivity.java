@@ -57,11 +57,11 @@ public class MatchResultsActivity extends AppCompatActivity {
 
     private void openRecipeDetail(Recipe recipe) {
         Intent intent = new Intent(this, RecipeDetailActivity.class);
-        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_NAME, recipe.name);
-        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_INGREDIENTS, recipe.ingredients);
-        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_TIME, recipe.time);
-        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_INSTRUCTIONS, recipe.instructions);
-        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_IMAGE, recipe.imageResId);
+//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_NAME, recipe.name);
+//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_INGREDIENTS, recipe.ingredients);
+//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_TIME, recipe.time);
+//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_INSTRUCTIONS, recipe.instructions);
+//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_IMAGE, recipe.imageResId);
         startActivity(intent);
     }
 
@@ -75,25 +75,25 @@ public class MatchResultsActivity extends AppCompatActivity {
         }
 
         List<RecipeMatch> results = new ArrayList<>();
-        for (Recipe recipe : recipes) {
-            List<String> ingredients = splitIngredients(recipe.ingredients);
-            int total = ingredients.size();
-            int matched = 0;
-            for (String ingredient : ingredients) {
-                if (detectedSet.contains(ingredient)) {
-                    matched++;
-                }
-            }
-            int percent = total == 0 ? 0 : Math.round((matched * 100f) / total);
-            results.add(new RecipeMatch(recipe, percent));
-        }
+//        for (Recipe recipe : recipes) {
+//            List<String> ingredients = splitIngredients(recipe.ingredients);
+//            int total = ingredients.size();
+//            int matched = 0;
+//            for (String ingredient : ingredients) {
+//                if (detectedSet.contains(ingredient)) {
+//                    matched++;
+//                }
+//            }
+//            int percent = total == 0 ? 0 : Math.round((matched * 100f) / total);
+//            results.add(new RecipeMatch(recipe, percent));
+//        }
 
         Collections.sort(results, (a, b) -> {
             int cmp = Integer.compare(b.matchPercent, a.matchPercent);
             if (cmp != 0) {
                 return cmp;
             }
-            return a.recipe.name.compareToIgnoreCase(b.recipe.name);
+            return a.recipe.getDish_name().compareToIgnoreCase(b.recipe.getDish_name());
         });
 
         return results;

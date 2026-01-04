@@ -1,9 +1,11 @@
 package com.lvl.homecookai;
 
+import android.content.Intent;
 import android.graphics.Outline;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewOutlineProvider;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
@@ -75,7 +77,21 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
+        Button btnOpen = findViewById(R.id.fab_scan_food);
+
+        btnOpen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 1. Создаем Intent (откуда, куда)
+                Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
+
+                // 3. Запускаем
+                startActivity(intent);
+            }
+        });
     }
+
+
 
     private void makeImageViewsCircular() {
         // Find all category ImageViews and make them circular

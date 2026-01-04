@@ -1,8 +1,6 @@
 package com.lvl.homecookai;
 
 import android.graphics.Bitmap;
-
-import com.google.ai.client.generativeai.BuildConfig;
 import com.google.ai.client.generativeai.GenerativeModel;
 import com.google.ai.client.generativeai.java.GenerativeModelFutures;
 import com.google.ai.client.generativeai.type.Content;

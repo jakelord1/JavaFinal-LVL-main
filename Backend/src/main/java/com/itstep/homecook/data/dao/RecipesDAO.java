@@ -29,7 +29,7 @@ public class RecipesDAO {
         String sql = "SELECT * FROM Recipes rec INNER JOIN Recipe_Positions rec_pos ON rec_pos.recipe_id = rec.id INNER JOIN Ingredients ing ON ing.id = rec_pos.ingredient_id LIMIT ?,100;";
         List<Recipes> ret = new ArrayList<>();
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, page);
+            stmt.setInt(1, page * 100);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Recipes that = Recipes.fromResultSet(rs);

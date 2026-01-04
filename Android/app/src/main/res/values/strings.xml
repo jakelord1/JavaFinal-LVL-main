@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">HomeCookAI</string>
+    <string name="app_title">HomeCook.ai</string>
+
+    <string name="recipe_details">Recipe Details</string>
+    <string name="cooking_time">Cooking Time</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="instructions">Instructions</string>
+    <string name="start_cooking">Start Cooking</string>
+    <string name="save_recipe">Save Recipe</string>
+    <string name="recipe_image">Recipe image</string>
+
+    <string name="scan_ingredients">Scan Ingredients</string>
+    <string name="camera_instruction">Point your camera at the ingredients you want to use. The app will recognize them and suggest recipes.</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="upload_from_gallery">Upload from Gallery</string>
+    <string name="recent_scans">Recent Scans</string>
+    <string name="camera_preview">Camera preview</string>
+    <string name="camera_icon">Camera icon</string>
+    <string name="view_recipes">View recipes</string>
+    <string name="recent_scan_thumbnail">Recent scan thumbnail</string>
+
+    <string name="my_recipes">My Recipes</string>
+    <string name="view">View</string>
+    <string name="cook">Cook</string>
+    <string name="load_more">Load more</string>
+
+    <string name="tap_to_scan_ingredients">Tap to scan ingredients</string>
+    <string name="or">or</string>
+    <string name="enter_ingredients_hint">Enter ingredients you have</string>
+    <string name="categories">Categories</string>
+    <string name="newly_added">Newly added</string>
+
+    <string name="search">Search</string>
+    <string name="enter_ingredients_first">Enter ingredients to search</string>
+    <string name="home">Home</string>
+    <string name="camera">Camera</string>
+    <string name="history">History</string>
+    <string name="choose_from_gallery">Choose from Gallery</string>
+    <string name="matched_recipes">Matched Recipes</string>
+    <string name="no_ingredients_detected">No ingredients detected</string>
+    <string name="detected_ingredients">Detected ingredients</string>
+    <string name="scan_food">Scan food</string>
+    <string name="match_percent_format">%1$d%% match</string>
+    <string name="match_count_format">%1$d recipes found</string>
+
+    <string name="found_products">Найденные продукты</string>
+    <string name="ok">OK</string>
+
+    <string name="error_loading_image">Error loading image: %1$s</string>
+    <string name="analyzing_image">Analyzing image…</string>
+    <string name="error">Error: %1$s</string>
+
+    <string name="error_parsing_json">Could not parse JSON response, trying fallback</string>
+    <string name="error_creating_file">Error creating file: %1$s</string>
+    <string name="camera_permission_denied">Camera permission denied</string>
+    <string name="storage_permission_denied">Storage permission denied</string>
+
+    <string name="ready">Готово</string>
+    <string name="products_found">Были найдены продукты</string>
+    <string name="recognition_failed">Не удалось распознать</string>
+    <string name="error_occurred">Произошла ошибка: %1$s</string>
+</resources>
