@@ -20,7 +20,7 @@
     <string name="view_recipes">View recipes</string>
     <string name="recent_scan_thumbnail">Recent scan thumbnail</string>
 
-    <string name="my_recipes">My Recipes</string>
+    <string name="my_recipes">Saved Recipes</string>
     <string name="view">View</string>
     <string name="cook">Cook</string>
     <string name="load_more">Load more</string>
@@ -41,6 +41,29 @@
     <string name="no_ingredients_detected">No ingredients detected</string>
     <string name="detected_ingredients">Detected ingredients</string>
     <string name="scan_food">Scan food</string>
+    <string name="profile">Profile</string>
+    <string name="profile_title">Profile</string>
+    <string name="profile_saved_label">Saved</string>
+    <string name="profile_scans_label">Scans</string>
+    <string name="profile_streak_label">Streak</string>
+    <string name="profile_subtitle">Local profile</string>
+    <string name="profile_quick_stats">Quick stats</string>
+    <string name="profile_preferences">Preferences</string>
+    <string name="profile_pref_value">Healthy meals, quick recipes, low sugar</string>
+    <string name="profile_weekly_goal">Weekly goal</string>
+    <string name="profile_weekly_goal_value">2 of 5 recipes cooked</string>
+    <string name="profile_recent_activity">Recent activity</string>
+    <string name="profile_activity_saved">Saved 3 new recipes</string>
+    <string name="profile_activity_scanned">Scanned pantry items</string>
+    <string name="profile_activity_cooked">Cooked: Veggie stir-fry</string>
+    <string name="no_saved_recipes">No saved recipes yet</string>
+    <string name="no_saved_recipes_message">Save recipes to access them here later.</string>
+    <string name="profile_saved_format">%1$d</string>
+    <string name="profile_scans_format">%1$d</string>
+    <string name="profile_streak_format">%1$d days</string>
+    <string name="back">Back</string>
+    <string name="no_matches">No matches yet</string>
+    <string name="no_matches_message">Try different ingredients to see matching recipes.</string>
     <string name="match_percent_format">%1$d%% match</string>
     <string name="match_count_format">%1$d recipes found</string>
 

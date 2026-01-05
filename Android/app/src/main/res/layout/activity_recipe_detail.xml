@@ -21,7 +21,6 @@
             android:text="←"
             android:textSize="24sp"
             android:textColor="?attr/colorPrimary"
-            android:fontFamily="@font/montserrat"
             style="@style/Widget.Material3.Button.TextButton" />
 
         <TextView
@@ -31,8 +30,7 @@
             android:text="@string/recipe_details"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorPrimary"
-            android:fontFamily="@font/montserrat" />
+            android:textColor="?attr/colorPrimary" />
 
     </FrameLayout>
 
@@ -77,7 +75,6 @@
                 android:textSize="36sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
-                android:fontFamily="@font/montserrat"
                 android:lineSpacingMultiplier="1.1"
                 android:layout_marginBottom="4dp" />
 
@@ -126,18 +123,16 @@
                             android:text="@string/cooking_time"
                             android:textSize="12sp"
                             android:textColor="@android:color/white"
-                            android:fontFamily="@font/montserrat"
                             android:alpha="0.85" />
 
-                        <TextView
-                            android:id="@+id/time_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="20 minutes"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:textColor="@android:color/white"
-                            android:fontFamily="@font/montserrat" />
+        <TextView
+            android:id="@+id/time_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20 minutes"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white" />
 
                     </LinearLayout>
 
@@ -152,7 +147,6 @@
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"
-                android:fontFamily="@font/montserrat"
                 android:layout_marginBottom="12dp"
                 android:layout_marginTop="4dp" />
 
@@ -171,7 +165,6 @@
                     android:padding="20dp"
                     android:textSize="16sp"
                     android:textColor="?attr/colorOnSurface"
-                    android:fontFamily="@font/montserrat"
                     android:lineSpacingMultiplier="1.8"
                     android:text="- Pasta\n- Eggs\n- Bacon\n- Cheese" />
 
@@ -184,7 +177,6 @@
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"
-                android:fontFamily="@font/montserrat"
                 android:layout_marginBottom="12dp"
                 android:layout_marginTop="4dp" />
 
@@ -203,7 +195,6 @@
                     android:padding="20dp"
                     android:textSize="16sp"
                     android:textColor="?attr/colorOnSurface"
-                    android:fontFamily="@font/montserrat"
                     android:lineSpacingMultiplier="1.8"
                     android:text="1. Boil pasta\n2. Fry bacon\n3. Mix eggs with cheese\n4. Combine all ingredients\n5. Serve hot" />
 
@@ -220,7 +211,6 @@
                     android:layout_height="52dp"
                     android:text="@string/start_cooking"
                     android:textSize="16sp"
-                    android:fontFamily="@font/montserrat"
                     android:textStyle="bold"
                     style="@style/Widget.Material3.Button" />
 
@@ -229,7 +219,6 @@
                     android:layout_height="52dp"
                     android:text="@string/save_recipe"
                     android:textSize="16sp"
-                    android:fontFamily="@font/montserrat"
                     android:textStyle="bold"
                     style="@style/Widget.Material3.Button.OutlinedButton" />
 

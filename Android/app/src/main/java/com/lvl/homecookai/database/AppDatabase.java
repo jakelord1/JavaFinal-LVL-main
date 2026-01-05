@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Database(entities = {Recipe.class, Ingredient.class, Recipe_Position.class}, version = 1, exportSchema = false)
+@Database(entities = {Recipe.class, Ingredient.class, Recipe_Position.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract RecipeDao recipeDao();
     // Можно добавить IngredientDao и RecipePositionDao при необходимости
@@ -27,6 +27,7 @@ public abstract class AppDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "recipe_database")
                             .allowMainThreadQueries()
+                            .fallbackToDestructiveMigration()
                             .build();
 
                     // initializeData(INSTANCE);

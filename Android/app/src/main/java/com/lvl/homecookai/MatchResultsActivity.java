@@ -2,6 +2,8 @@ package com.lvl.homecookai;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -32,6 +34,9 @@ public class MatchResultsActivity extends AppCompatActivity {
         TextView detectedText = findViewById(R.id.detected_ingredients);
         TextView matchCount = findViewById(R.id.match_count);
         RecyclerView recyclerView = findViewById(R.id.match_recycler_view);
+        View emptyState = findViewById(R.id.empty_state);
+        View emptyBackButton = findViewById(R.id.empty_back_button);
+        View profileIcon = findViewById(R.id.profile_icon);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         ArrayList<String> detected = getIntent().getStringArrayListExtra(EXTRA_INGREDIENTS);
@@ -53,6 +58,23 @@ public class MatchResultsActivity extends AppCompatActivity {
         adapter.setItems(matches);
 
         matchCount.setText(getString(R.string.match_count_format, matches.size()));
+
+        boolean isEmpty = matches.isEmpty();
+        recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        if (emptyState != null) {
+            emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
+
+        if (emptyBackButton != null) {
+            emptyBackButton.setOnClickListener(v -> finish());
+        }
+        if (profileIcon != null) {
+            profileIcon.setOnClickListener(v ->
+                    startActivity(new Intent(this, MainActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                            .putExtra(MainActivity.EXTRA_START_TAB, R.id.nav_profile))
+            );
+        }
     }
 
     private void openRecipeDetail(Recipe recipe) {

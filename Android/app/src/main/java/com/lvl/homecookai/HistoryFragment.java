@@ -37,20 +37,30 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         AppDatabase database = AppDatabase.getDatabase(requireContext());
         recipeDao = database.recipeDao();
 
+        View profileIcon = view.findViewById(R.id.profile_icon);
+        if (profileIcon != null) {
+            profileIcon.setOnClickListener(v -> {
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).showProfile();
+                }
+            });
+        }
+
         RecyclerView recyclerView = view.findViewById(R.id.history_recycler_view);
+        View emptyState = view.findViewById(R.id.empty_state);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         adapter = new HistoryAdapter(this::openRecipeDetail);
         recyclerView.setAdapter(adapter);
 
         MaterialButton loadMoreButton = view.findViewById(R.id.load_more_button);
-        loadMoreButton.setOnClickListener(v -> loadNextPage(loadMoreButton));
+        loadMoreButton.setOnClickListener(v -> loadNextPage(loadMoreButton, recyclerView, emptyState));
 
-        loadNextPage(loadMoreButton);
+        loadNextPage(loadMoreButton, recyclerView, emptyState);
     }
 
     private void openRecipeDetail(Recipe recipe) {
@@ -63,7 +73,7 @@ public class HistoryFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void loadNextPage(MaterialButton loadMoreButton) {
+    private void loadNextPage(MaterialButton loadMoreButton, RecyclerView recyclerView, View emptyState) {
         if (!hasMore) {
             loadMoreButton.setEnabled(false);
             return;
@@ -75,15 +85,26 @@ public class HistoryFragment extends Fragment {
         if (page.isEmpty()) {
             hasMore = false;
             loadMoreButton.setEnabled(false);
+            loadMoreButton.setVisibility(View.GONE);
+            if (adapter.getItemCount() == 0 && emptyState != null) {
+                emptyState.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+            }
             return;
         }
 
         adapter.addItems(page);
         currentPage++;
 
+        if (emptyState != null) {
+            emptyState.setVisibility(View.GONE);
+        }
+        recyclerView.setVisibility(View.VISIBLE);
+
         if (page.size() < PAGE_SIZE) {
             hasMore = false;
             loadMoreButton.setEnabled(false);
+            loadMoreButton.setVisibility(View.GONE);
         }
     }
 }

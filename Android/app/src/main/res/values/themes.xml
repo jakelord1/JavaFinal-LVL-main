@@ -5,8 +5,6 @@
         <item name="colorPrimaryContainer">@color/pink_light</item>
         <item name="colorOnPrimaryContainer">@color/pink_dark</item>
 
-        <item name="android:fontFamily">@font/montserrat</item>
-        <item name="fontFamily">@font/montserrat</item>
 
     </style>
 
