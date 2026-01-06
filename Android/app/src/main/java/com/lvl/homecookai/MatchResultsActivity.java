@@ -11,10 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.lvl.homecookai.database.AppDatabase;
 import com.lvl.homecookai.database.Recipe;
 import com.lvl.homecookai.database.RecipeDao;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,6 +28,7 @@ import java.util.Set;
 public class MatchResultsActivity extends AppCompatActivity {
 
     public static final String EXTRA_INGREDIENTS = "extra_ingredients";
+    public static final String EXTRA_RECIPES = "extra_recipes";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,27 +43,21 @@ public class MatchResultsActivity extends AppCompatActivity {
         View profileIcon = findViewById(R.id.profile_icon);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        ArrayList<String> detected = getIntent().getStringArrayListExtra(EXTRA_INGREDIENTS);
-        if (detected == null) {
-            detected = new ArrayList<>();
+        String json = getIntent().getStringExtra(EXTRA_RECIPES);
+        List<Recipe> recipes = new ArrayList<>();
+
+        if (json != null) {
+            Type type = new TypeToken<List<Recipe>>(){}.getType();
+            recipes = new Gson().fromJson(json, type);
         }
 
-        if (detected.isEmpty()) {
-            detectedText.setText(getString(R.string.no_ingredients_detected));
-        } else {
-            detectedText.setText(joinIngredients(detected));
-        }
-
-        RecipeDao recipeDao = AppDatabase.getDatabase(this).recipeDao();
-        List<RecipeMatch> matches = buildMatches(recipeDao.getAllRecipes(), detected);
-
-        MatchResultsAdapter adapter = new MatchResultsAdapter(match -> openRecipeDetail(match.recipe));
+        MatchResultsAdapter adapter = new MatchResultsAdapter(this::openRecipeDetail);
         recyclerView.setAdapter(adapter);
-        adapter.setItems(matches);
+        adapter.setItems(recipes);
 
-        matchCount.setText(getString(R.string.match_count_format, matches.size()));
+        matchCount.setText(getString(R.string.match_count_format, recipes.size()));
 
-        boolean isEmpty = matches.isEmpty();
+        boolean isEmpty = recipes.isEmpty();
         recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
         if (emptyState != null) {
             emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
@@ -79,65 +77,8 @@ public class MatchResultsActivity extends AppCompatActivity {
 
     private void openRecipeDetail(Recipe recipe) {
         Intent intent = new Intent(this, RecipeDetailActivity.class);
-//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_NAME, recipe.name);
-//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_INGREDIENTS, recipe.ingredients);
-//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_TIME, recipe.time);
-//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_INSTRUCTIONS, recipe.instructions);
-//        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_IMAGE, recipe.imageResId);
+        intent.putExtra("recipe_id", recipe.getId());
         startActivity(intent);
-    }
-
-    private List<RecipeMatch> buildMatches(List<Recipe> recipes, List<String> detected) {
-        Set<String> detectedSet = new HashSet<>();
-        for (String item : detected) {
-            String normalized = normalizeIngredient(item);
-            if (!normalized.isEmpty()) {
-                detectedSet.add(normalized);
-            }
-        }
-
-        List<RecipeMatch> results = new ArrayList<>();
-//        for (Recipe recipe : recipes) {
-//            List<String> ingredients = splitIngredients(recipe.ingredients);
-//            int total = ingredients.size();
-//            int matched = 0;
-//            for (String ingredient : ingredients) {
-//                if (detectedSet.contains(ingredient)) {
-//                    matched++;
-//                }
-//            }
-//            int percent = total == 0 ? 0 : Math.round((matched * 100f) / total);
-//            results.add(new RecipeMatch(recipe, percent));
-//        }
-
-        Collections.sort(results, (a, b) -> {
-            int cmp = Integer.compare(b.matchPercent, a.matchPercent);
-            if (cmp != 0) {
-                return cmp;
-            }
-            return a.recipe.getDish_name().compareToIgnoreCase(b.recipe.getDish_name());
-        });
-
-        return results;
-    }
-
-    private List<String> splitIngredients(String ingredients) {
-        if (ingredients == null) {
-            return new ArrayList<>();
-        }
-        String[] lines = ingredients.split("\\r?\\n");
-        List<String> result = new ArrayList<>();
-        for (String line : lines) {
-            String cleaned = line.replace("-", "").trim();
-            if (!cleaned.isEmpty()) {
-                result.add(normalizeIngredient(cleaned));
-            }
-        }
-        return result;
-    }
-
-    private String normalizeIngredient(String value) {
-        return value == null ? "" : value.toLowerCase(Locale.US).trim();
     }
 
     private String joinIngredients(List<String> ingredients) {

@@ -9,7 +9,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
+import com.lvl.homecookai.database.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,17 +19,17 @@ import java.util.List;
 public class MatchResultsAdapter extends RecyclerView.Adapter<MatchResultsAdapter.MatchViewHolder> {
 
     public interface OnRecipeClickListener {
-        void onRecipeClick(RecipeMatch match);
+        void onRecipeClick(Recipe match);
     }
 
-    private final List<RecipeMatch> items = new ArrayList<>();
+    private final List<Recipe> items = new ArrayList<>();
     private final OnRecipeClickListener listener;
 
     public MatchResultsAdapter(OnRecipeClickListener listener) {
         this.listener = listener;
     }
 
-    public void setItems(List<RecipeMatch> newItems) {
+    public void setItems(List<Recipe> newItems) {
         items.clear();
         items.addAll(newItems);
         notifyDataSetChanged();
@@ -43,7 +45,7 @@ public class MatchResultsAdapter extends RecyclerView.Adapter<MatchResultsAdapte
 
     @Override
     public void onBindViewHolder(@NonNull MatchViewHolder holder, int position) {
-        RecipeMatch match = items.get(position);
+        Recipe match = items.get(position);
         holder.bind(match, listener);
     }
 
@@ -68,12 +70,18 @@ public class MatchResultsAdapter extends RecyclerView.Adapter<MatchResultsAdapte
             viewButton = itemView.findViewById(R.id.view_button);
         }
 
-        void bind(RecipeMatch match, OnRecipeClickListener listener) {
-//            recipeName.setText(match.recipe.name);
-//            recipeTime.setText(match.recipe.time);
-//            recipeImage.setImageResource(match.recipe.imageResId);
-            matchPercent.setText(itemView.getContext().getString(
-                    R.string.match_percent_format, match.matchPercent));
+        void bind(Recipe match, OnRecipeClickListener listener) {
+            recipeName.setText(match.getDish_name());
+            recipeTime.setText(match.getCook_time() + " мин");
+
+            // если image — это URL
+            Glide.with(itemView.getContext())
+                    .load(match.getImage())
+                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .into(recipeImage);
+
+            // если процент совпадения не используется — можно скрыть
+            matchPercent.setVisibility(View.GONE);
 
             View.OnClickListener clickListener = v -> listener.onRecipeClick(match);
             itemView.setOnClickListener(clickListener);

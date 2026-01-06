@@ -1,5 +1,6 @@
 package com.lvl.homecookai.ApiSetup;
 
+import com.lvl.homecookai.database.Ingredient;
 import com.lvl.homecookai.database.Recipe;
 import com.lvl.homecookai.database.Recipe_Position;
 
@@ -18,6 +19,6 @@ public interface MethodsToApi {
     Call<Recipe> getRecipe(@Query("type") String type, @Query("id") int recipeId);
     @POST("recipes")
     Call<List<Recipe>> searchRecipes(@Query("action") String action, @Body List<Recipe_Position> positions);
-
-
+    @GET("ingredients")
+    Call<List<Ingredient>> getAllIngredients();
 }

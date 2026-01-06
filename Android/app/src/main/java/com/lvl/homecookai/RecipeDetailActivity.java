@@ -45,8 +45,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         try {
 
 
-        //int recipeId = getIntent().getIntExtra("recipe_id", 0);
-        int recipeId = 6;
+        int recipeId = getIntent().getIntExtra("recipe_id", 0);
 
         api = ApiAccess.getClient().create(MethodsToApi.class);
 
@@ -95,13 +94,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 Toast.makeText(RecipeDetailActivity.this,
                         "Ошибка загрузки рецепта", Toast.LENGTH_SHORT).show();
                 Log.e("API_ERROR", "Ошибка при запросе рецепта: " + t.getMessage(), t);
-
-                // 3. Можно добавить проверку на тип ошибки, чтобы понять, что именно случилось
-                if (t instanceof java.io.IOException) {
-                    Log.e("API_ERROR", "Проблема с сетью или сервером");
-                } else {
-                    Log.e("API_ERROR", "Ошибка конвертации данных (GSON)");
-                }
             }
         });
     }
