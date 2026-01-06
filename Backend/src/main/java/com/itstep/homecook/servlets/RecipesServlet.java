@@ -74,8 +74,7 @@ public class RecipesServlet extends HttpServlet {
         } else {
             Recipes recipes = new Gson().fromJson(req.getReader(), Recipes.class);
             recipesDAO.add(recipes);
-            List<Recipes> rec = recipesDAO.getName(recipes.getDish_name());
-            int new_id = rec.get(0).getId();
+            int new_id = recipesDAO.getName(recipes.getDish_name());
             for (Recipe_Positions pos : recipes.getRecipe_positions()) {
                 pos.setIngredient(new Ingredients(pos.getIngredient_id(), null, null, null));
                 pos.setRecipe(recipes);
