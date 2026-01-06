@@ -16,7 +16,9 @@ public interface MethodsToApi {
     @GET("recipes")
     Call<List<Recipe>> getAllRecipes(@Query("type") String type, @Query("page") int page);
     @GET("recipes")
-    Call<Recipe> getRecipe(@Query("type") String type, @Query("id") int recipeId);
+    Call<Recipe> getRecipeById(@Query("type") String type, @Query("id") int recipeId);
+    @GET("recipes")
+    Call<List<Recipe>> getRecipeByName(@Query("type") String type, @Query("name") String recipeName);
     @POST("recipes")
     Call<List<Recipe>> searchRecipes(@Query("action") String action, @Body List<Recipe_Position> positions);
     @GET("ingredients")

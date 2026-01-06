@@ -19,8 +19,6 @@ import com.lvl.homecookai.database.Recipe_Position;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RecipeDetailActivity extends AppCompatActivity {
 
@@ -49,7 +47,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         api = ApiAccess.getClient().create(MethodsToApi.class);
 
-        api.getRecipe("id", recipeId).enqueue(new Callback<Recipe>() {
+        api.getRecipeById("id", recipeId).enqueue(new Callback<Recipe>() {
             @Override
             public void onResponse(Call<Recipe> call, Response<Recipe> response) {
                 if (response.isSuccessful() && response.body() != null) {

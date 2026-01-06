@@ -74,6 +74,7 @@ public class RecipesDAO {
         return null;
     }
 
+
     public List<Recipes> findMatchingRecipes(List<Recipe_Positions> recipePositions) {
         List<Recipes> result = new ArrayList<>();
         if (recipePositions == null || recipePositions.isEmpty()) {
@@ -155,18 +156,31 @@ public class RecipesDAO {
     }
 
 
-    public int getName(String name) {
-        String sql = "SELECT id FROM Recipes WHERE dish_name = ?;";
+    public List<Recipes> getName(String name) {
+        String sql = "SELECT * FROM Recipes WHERE dish_name = ?;";
         try (PreparedStatement prep = connection.prepareStatement(sql)) {
             prep.setString(1, name);
             try (ResultSet rs = prep.executeQuery()) {
-                if (rs.next())
-                    return rs.getInt("id");
+                List<Recipes> recipes = new ArrayList<>();
+                while (rs.next()) {
+                    Recipes recipe = new Recipes(
+                        null,
+                        rs.getInt("id"),
+                        rs.getString("dish_name"),
+                        rs.getInt("cook_time"),
+                        rs.getString("dish_shorttext"),
+                        rs.getString("recipe_fulltext"),
+                        rs.getString("category"),
+                        rs.getString("image")
+                    );
+                    recipes.add(recipe);
+                }
+                return recipes;
             }
         } catch (SQLException ex) {
-            logger.warning("RecipesDAO::getAll " + ex.getMessage());
+            logger.warning("RecipesDAO::getName " + ex.getMessage());
         }
-        return 0;
+        return new ArrayList<>();
     }
 
     public void add(Recipes recipes) {

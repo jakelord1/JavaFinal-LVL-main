@@ -14,12 +14,20 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.lvl.homecookai.ApiSetup.ApiAccess;
+import com.lvl.homecookai.ApiSetup.MethodsToApi;
+import com.lvl.homecookai.database.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class HomeFragment extends Fragment {
 
+    private MethodsToApi api;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -62,39 +70,68 @@ public class HomeFragment extends Fragment {
     }
 
     private void submitSearch(String query) {
-        List<String> ingredients = parseIngredientsQuery(query);
-        if (ingredients.isEmpty()) {
-            Toast.makeText(requireContext(), getString(R.string.enter_ingredients_first),
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
+        //Метод для поиска рецептов по имени(для поиска)
+        //api = ApiAccess.getClient().create(MethodsToApi.class);
+        //api.getRecipeByName("name", searchName).enqueue(new Callback<List<Recipe>>() {
+        //    @Override
+        //    public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+        //        if (response.isSuccessful() && response.body() != null) {
+        //            List<Recipe> recipes = response.body();
+        //
+        //            if (recipes.isEmpty()) {
+        //                Toast.makeText(SearchActivity.this,
+        //                        "Рецептов не найдено", Toast.LENGTH_SHORT).show();
+        //            } else {
+        //                // например, передаем список в RecyclerView
+        //                recipesAdapter.setRecipes(recipes);
+        //            }
+        //        }
+        //    }
+        //
+        //    @Override
+        //    public void onFailure(Call<List<Recipe>> call, Throwable t) {
+        //        Toast.makeText(SearchActivity.this,
+        //                "Ошибка поиска рецептов", Toast.LENGTH_SHORT).show();
+        //        Log.e("API_ERROR", "Ошибка при поиске: " + t.getMessage(), t);
+        //    }
+        //});
 
-        Intent intent = new Intent(requireContext(), MatchResultsActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.putStringArrayListExtra(MatchResultsActivity.EXTRA_INGREDIENTS,
-                new ArrayList<>(ingredients));
-        startActivity(intent);
+        //        if (ingredients.isEmpty()) {
+        //            Toast.makeText(requireContext(), getString(R.string.enter_ingredients_first),
+        //                    Toast.LENGTH_SHORT).show();
+        //            return;
+        //        }
+        //
+        //        Intent intent = new Intent(requireContext(), MatchResultsActivity.class);
+        //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        //        intent.putStringArrayListExtra(MatchResultsActivity.EXTRA_INGREDIENTS,
+        //                new ArrayList<>(ingredients));
+        //        startActivity(intent);
     }
+    //Метод для получения всех рецептов(для показа элементов на глав. странице)
+    //api.getAllRecipes("all", 1).enqueue(new Callback<List<Recipe>>() {
+    //        @Override
+    //        public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+    //            if (response.isSuccessful() && response.body() != null) {
+    //                List<Recipe> recipes = response.body();
+    //
+    //                // например, выводим названия в лог
+    //                for (Recipe recipe : recipes) {
+    //                    Log.d("API", "Рецепт: " + recipe.getDish_name());
+    //                }
+    //
+    //                // здесь можно передать список в RecyclerView адаптер
+    //                recipesAdapter.setRecipes(recipes);
+    //            }
+    //        }
+    //
+    //        @Override
+    //        public void onFailure(Call<List<Recipe>> call, Throwable t) {
+    //            Toast.makeText(MainActivity.this,
+    //                    "Ошибка загрузки списка рецептов", Toast.LENGTH_SHORT).show();
+    //            Log.e("API_ERROR", "Ошибка при запросе списка: " + t.getMessage(), t);
+    //        }
+    //    });
 
-    private List<String> parseIngredientsQuery(String query) {
-        List<String> result = new ArrayList<>();
-        if (query == null) {
-            return result;
-        }
-        String[] parts = query.split("[,\\n]+");
-        for (String part : parts) {
-            String trimmed = part.trim();
-            if (!trimmed.isEmpty()) {
-                result.add(trimmed);
-            }
-        }
-        if (result.isEmpty()) {
-            String trimmed = query.trim();
-            if (!trimmed.isEmpty()) {
-                result.add(trimmed);
-            }
-        }
-        return result;
-    }
 }
 

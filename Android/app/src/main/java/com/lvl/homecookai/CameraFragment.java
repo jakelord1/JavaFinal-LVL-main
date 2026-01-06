@@ -253,8 +253,8 @@ public class CameraFragment extends Fragment {
                     public void onSuccess(String result) {
                         if (isAdded()) {
                             showLoading(false);
-                            List<String> ingredients = parseIngredients(result);
-                            openMatchResults(ingredients);
+                            String cleanedJson = extractJson(result);
+                            openMatchResults(cleanedJson);
                         }
                     }
 
@@ -280,40 +280,52 @@ public class CameraFragment extends Fragment {
         );
     }
 
-    private void openMatchResults(List<String> ingredients) {
+    private String extractJson(String input) {
+        if (input == null) return "";
+
+        int start = input.indexOf('{');
+        int end = input.lastIndexOf('}');
+        if (start >= 0 && end > start) {
+            return input.substring(start, end + 1).trim();
+        }
+        return input.trim();
+    }
+
+
+    private void openMatchResults(String json_rp) {
         Intent intent = new Intent(requireContext(), MatchResultsActivity.class);
-        intent.putStringArrayListExtra(MatchResultsActivity.EXTRA_INGREDIENTS,
-                new ArrayList<>(ingredients));
+        intent.putExtra(MatchResultsActivity.EXTRA_INGREDIENTS,
+                json_rp);
         startActivity(intent);
     }
 
-    private List<String> parseIngredients(String result) {
-        List<String> parsed = new ArrayList<>();
-        String json = result;
-        int start = result.indexOf('{');
-        int end = result.lastIndexOf('}');
-        if (start != -1 && end != -1 && end > start) {
-            json = result.substring(start, end + 1);
-        }
-        try {
-            org.json.JSONObject root = new org.json.JSONObject(json);
-            org.json.JSONArray array = root.optJSONArray("ingredients");
-            if (array != null) {
-                Set<String> unique = new LinkedHashSet<>();
-                for (int i = 0; i < array.length(); i++) {
-                    String item = array.optString(i, "").trim();
-                    if (!item.isEmpty()) {
-                        unique.add(item.toLowerCase(Locale.US));
-                    }
-                }
-                parsed.addAll(unique);
-            }
-        } catch (Exception e) {
-            Toast.makeText(requireContext(), getString(R.string.error_parsing_json),
-                    Toast.LENGTH_SHORT).show();
-        }
-        return parsed;
-    }
+//    private List<String> parseIngredients(String result) {
+//        List<String> parsed = new ArrayList<>();
+//        String json = result;
+//        int start = result.indexOf('{');
+//        int end = result.lastIndexOf('}');
+//        if (start != -1 && end != -1 && end > start) {
+//            json = result.substring(start, end + 1);
+//        }
+//        try {
+//            org.json.JSONObject root = new org.json.JSONObject(json);
+//            org.json.JSONArray array = root.optJSONArray("ingredients");
+//            if (array != null) {
+//                Set<String> unique = new LinkedHashSet<>();
+//                for (int i = 0; i < array.length(); i++) {
+//                    String item = array.optString(i, "").trim();
+//                    if (!item.isEmpty()) {
+//                        unique.add(item.toLowerCase(Locale.US));
+//                    }
+//                }
+//                parsed.addAll(unique);
+//            }
+//        } catch (Exception e) {
+//            Toast.makeText(requireContext(), getString(R.string.error_parsing_json),
+//                    Toast.LENGTH_SHORT).show();
+//        }
+//        return parsed;
+//    }
 
     private File createImageFile() {
         try {

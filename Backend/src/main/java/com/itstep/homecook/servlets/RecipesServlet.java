@@ -42,6 +42,13 @@ public class RecipesServlet extends HttpServlet {
             resp.setContentType("application/json");
             resp.getWriter().write(json);
         }
+        else if (typeParam.equals("name")) {
+            String nameParam = req.getParameter("name");
+            List<Recipes> recipe = recipesDAO.getName(nameParam);
+            String json = new Gson().toJson(recipe);
+            resp.setContentType("application/json");
+            resp.getWriter().write(json);
+        }
         else if (typeParam.equals("all")) {
             int page = Integer.parseInt(req.getParameter("page"));
             List<Recipes> recipes = recipesDAO.getAll(page);
