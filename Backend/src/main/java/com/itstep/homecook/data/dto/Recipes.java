@@ -23,7 +23,11 @@ public class Recipes {
         this.category = categories;
         this.image = image;
     }
-     public static Recipes fromResultSet(java.sql.ResultSet rs) throws java.sql.SQLException {
+
+     public Recipes() {
+     }
+
+    public static Recipes fromResultSet(java.sql.ResultSet rs) throws java.sql.SQLException {
         
         Recipes recipe = new Recipes(
             null,

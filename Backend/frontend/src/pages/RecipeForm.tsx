@@ -105,7 +105,7 @@ const RecipeForm = () => {
       });
       console.log('Creating new recipe:', newRecipe);
       console.log('Creating new recipe positions:', currentRecipePositions);
-        fetch(`http://localhost:8080/homecook/recipes?action=create`, {
+        fetch(`${API_URL}:8080/homecook/recipes?action=create`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newRecipe),
@@ -138,7 +138,7 @@ const RecipeForm = () => {
           <Form.Control
             type="text"
             name="image"
-            value={formData.dish_name}
+            value={formData.image}
             onChange={handleFormChange}
             required
           />

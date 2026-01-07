@@ -10,6 +10,9 @@ public class Recipe_Positions {
 
     private int ingredient_id;
 
+    public Recipe_Positions() {
+    }
+
     public Recipe_Positions(
         int id,
         Ingredients ingredient,

@@ -12,7 +12,8 @@ public class Ingredients {
         this.description = desc;
         this.category = category;
     }
-
+    public Ingredients() {
+    }
     public static Ingredients fromResultSet(java.sql.ResultSet rs) throws java.sql.SQLException {
         Ingredients ingredient = new Ingredients(
             rs.getInt("id"),
