@@ -7,6 +7,7 @@ com\itstep\homecook\ioc\ServletsConfig.class
 com\itstep\homecook\resources\JakartaEE11Resource.class
 com\itstep\homecook\data\dao\RecipesDAO.class
 com\itstep\homecook\data\dto\Recipe_Positions.class
+com\itstep\homecook\servlets\RecipesServlet$1.class
 com\itstep\homecook\servlets\IngredientsServlet.class
 com\itstep\homecook\services\config\ConfigService.class
 com\itstep\homecook\data\dto\Ingredients.class

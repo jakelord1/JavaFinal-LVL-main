@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { recipes as mockRecipes, type Recipe } from '../data/mockData';
 import './Recipes.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Recipes = () => {
   const [recipes, setRecipes] = useState<Recipe[]>(mockRecipes);

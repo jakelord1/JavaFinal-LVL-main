@@ -10,9 +10,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.HashMap;
 
 import com.itstep.homecook.data.dto.Recipe_Positions;
 import com.itstep.homecook.data.dto.Recipes;
+import com.itstep.homecook.data.dto.Ingredients;
 
 
 public class RecipesDAO {
@@ -26,23 +28,73 @@ public class RecipesDAO {
     }
 
     public List<Recipes> getAll(int page) {
-        String sql = "SELECT * FROM Recipes rec INNER JOIN Recipe_Positions rec_pos ON rec_pos.recipe_id = rec.id INNER JOIN Ingredients ing ON ing.id = rec_pos.ingredient_id LIMIT ?,100;";
-        List<Recipes> ret = new ArrayList<>();
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, page * 100);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Recipes that = Recipes.fromResultSet(rs);
-                for (Recipe_Positions r : that.getRecipe_positions()) {
-                    r.setRecipe(null);
-                }
-                ret.add(that);
+    List<Recipes> ret = new ArrayList<>();
+
+    String sql = """
+        SELECT 
+            rec.id AS recipe_id,
+            rec.dish_name AS dish_name,
+            rec.dish_shorttext AS dish_shorttext,
+            rec.cook_time AS cook_time,
+            rec.category AS categories,
+            rec.recipe_fulltext AS recipe_fulltext,
+            rec.image AS image,
+            rec_pos.id AS position_id,
+            rec_pos.ingredient_id AS position_ingredient_id,
+            rec_pos.amount AS position_amount,
+            ing.id AS ingredient_id,
+            ing.name AS ingredient_name
+        FROM Recipes rec
+        LEFT JOIN Recipe_Positions rec_pos ON rec_pos.recipe_id = rec.id
+        LEFT JOIN Ingredients ing ON ing.id = rec_pos.ingredient_id
+        LIMIT ?,100
+    """;
+
+    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.setInt(1, page * 100);
+        ResultSet rs = stmt.executeQuery();
+
+        Map<Integer, Recipes> recipesMap = new HashMap<>();
+
+        while (rs.next()) {
+            int recipeId = rs.getInt("recipe_id");
+            Recipes recipe = recipesMap.get(recipeId);
+
+            if (recipe == null) {
+                recipe = new Recipes();
+                recipe.setId(recipeId);
+                recipe.setDish_name(rs.getString("dish_name"));
+                recipe.setDish_shorttext(rs.getString("dish_shorttext"));
+                recipe.setCook_time(rs.getInt("cook_time"));
+                recipe.setCategories(rs.getString("categories"));
+                recipe.setRecipe_fulltext(rs.getString("recipe_fulltext"));
+                recipe.setImage(rs.getString("image"));
+                recipe.setRecipe_positions(new ArrayList<>());
+                recipesMap.put(recipeId, recipe);
             }
-        } catch (SQLException ex) {
-            logger.warning("RecipesDAO::getAll " + ex.getMessage());
+
+            int posId = rs.getInt("position_id");
+            if (posId > 0) { // если у рецепта есть позиции
+                Recipe_Positions pos = new Recipe_Positions();
+                pos.setId(posId);
+                pos.setIngredient_id(rs.getInt("position_ingredient_id"));
+                pos.setAmount(rs.getInt("position_amount"));
+
+                Ingredients ing = new Ingredients();
+                ing.setId(rs.getInt("ingredient_id"));
+                ing.setName(rs.getString("ingredient_name"));
+                pos.setIngredient(ing);
+
+                pos.setRecipe(null);
+                recipe.getRecipe_positions().add(pos);
+            }
         }
-        return ret;
+        ret.addAll(recipesMap.values());
+    } catch (SQLException ex) {
+        logger.warning("RecipesDAO::getAll " + ex.getMessage());
     }
+    return ret;
+}
 
     public Recipes getId(int id) {
         String sql = "SELECT * FROM Recipes rec INNER JOIN Recipe_Positions rec_pos ON rec_pos.recipe_id = rec.id INNER JOIN Ingredients ing ON ing.id = rec_pos.ingredient_id WHERE rec.id = ?;";
