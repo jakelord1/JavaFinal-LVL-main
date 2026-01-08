@@ -1,38 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingStart="14dp"
+    android:paddingStart="12dp"
     android:paddingEnd="8dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginBottom="8dp"
-    android:background="@drawable/chip_background"
-    android:elevation="2dp"
-    app:layout_flexGrow="1"
-    app:layout_flexShrink="1">
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/search_box_background"
+    android:elevation="1dp">
 
     <TextView
         android:id="@+id/chip_text"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Ingredient x1"
-        android:textSize="14sp"
-        android:textColor="@android:color/white"
+        android:layout_weight="1"
+        android:text="Ingredient"
+        android:textSize="15sp"
+        android:textColor="#1a1a1a"
         android:textStyle="bold" />
 
-    <ImageView
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginEnd="8dp">
+
+        <ImageButton
+            android:id="@+id/chip_decrement"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Decrease"
+            android:src="@android:drawable/ic_input_delete"
+            android:scaleType="centerInside"
+            android:tint="#e74c3c" />
+
+        <TextView
+            android:id="@+id/chip_quantity"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="#1a1a1a"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/chip_increment"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Increase"
+            android:src="@android:drawable/ic_input_add"
+            android:scaleType="centerInside"
+            android:tint="#27ae60" />
+
+    </LinearLayout>
+
+    <ImageButton
         android:id="@+id/chip_remove"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:scaleType="centerInside"
-        android:tint="@android:color/white"
+        android:tint="#8a8a8a"
         android:contentDescription="Remove" />
 
 </LinearLayout>

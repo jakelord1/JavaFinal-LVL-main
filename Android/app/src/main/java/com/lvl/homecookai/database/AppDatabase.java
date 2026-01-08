@@ -16,6 +16,7 @@ import java.util.Set;
 @Database(entities = {Recipe.class, Ingredient.class, Recipe_Position.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract RecipeDao recipeDao();
+    public abstract IngredientDao ingredientDao();
     // Можно добавить IngredientDao и RecipePositionDao при необходимости
 
     private static volatile AppDatabase INSTANCE;

@@ -66,6 +66,7 @@
     <string name="no_matches_message">Try different ingredients to see matching recipes.</string>
     <string name="match_percent_format">%1$d%% match</string>
     <string name="match_count_format">%1$d recipes found</string>
+    <string name="confirm_ingredients_title">Search recipes</string>
 
     <string name="found_products">Найденные продукты</string>
     <string name="ok">OK</string>

@@ -17,11 +17,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.IngredientViewHolder> {
 
     private final List<Ingredient> items = new ArrayList<>();
     private final Map<Integer, Integer> quantities = new HashMap<>();
+    private final Map<Integer, Ingredient> ingredientsById = new HashMap<>();
     private final OnIngredientSelectionListener listener;
 
     public interface OnIngredientSelectionListener {
@@ -40,15 +43,31 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         notifyDataSetChanged();
     }
 
+    public void setAllIngredients(List<Ingredient> allItems) {
+        ingredientsById.clear();
+        if (allItems != null) {
+            for (Ingredient ingredient : allItems) {
+                ingredientsById.put(ingredient.getId(), ingredient);
+            }
+        }
+    }
+
     public Map<Ingredient, Integer> getSelectedIngredients() {
         Map<Ingredient, Integer> selected = new HashMap<>();
-        for (Ingredient ingredient : items) {
-            int quantity = quantities.getOrDefault(ingredient.getId(), 0);
+        for (Map.Entry<Integer, Integer> entry : quantities.entrySet()) {
+            int quantity = entry.getValue();
             if (quantity > 0) {
-                selected.put(ingredient, quantity);
+                Ingredient ingredient = ingredientsById.get(entry.getKey());
+                if (ingredient != null) {
+                    selected.put(ingredient, quantity);
+                }
             }
         }
         return selected;
+    }
+
+    public Set<Integer> getSelectedIngredientIds() {
+        return new HashSet<>(quantities.keySet());
     }
 
     public void removeIngredient(Ingredient ingredient) {
@@ -57,6 +76,36 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         if (listener != null) {
             listener.onSelectionChanged(getSelectedIngredients());
         }
+    }
+
+    public void setQuantity(Ingredient ingredient, int quantity) {
+        if (ingredient == null) {
+            return;
+        }
+        if (quantity > 0) {
+            quantities.put(ingredient.getId(), quantity);
+        } else {
+            quantities.remove(ingredient.getId());
+        }
+        int position = findPositionById(ingredient.getId());
+        if (position >= 0) {
+            notifyItemChanged(position);
+        } else {
+            notifyDataSetChanged();
+        }
+        if (listener != null) {
+            listener.onSelectionChanged(getSelectedIngredients());
+        }
+    }
+
+    public void incrementIngredient(Ingredient ingredient) {
+        int current = quantities.getOrDefault(ingredient.getId(), 0);
+        setQuantity(ingredient, current + 1);
+    }
+
+    public void decrementIngredient(Ingredient ingredient) {
+        int current = quantities.getOrDefault(ingredient.getId(), 0);
+        setQuantity(ingredient, Math.max(0, current - 1));
     }
 
     public void clearSelection() {
@@ -99,6 +148,15 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    private int findPositionById(int ingredientId) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getId() == ingredientId) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     static class IngredientViewHolder extends RecyclerView.ViewHolder {

@@ -5,6 +5,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+
 @Entity(tableName = "recipe_position",
         foreignKeys = {
                 @ForeignKey(entity = Recipe.class,
@@ -21,7 +23,9 @@ public class Recipe_Position {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
+    @SerializedName("recipe_id")
     private int recipeId;
+    @SerializedName("ingredient_id")
     private int ingredientId;
 
     private int amount;

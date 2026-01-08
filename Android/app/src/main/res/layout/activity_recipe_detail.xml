@@ -1,62 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/recipe_detail_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
-
-    <FrameLayout
-        android:id="@+id/header_bar"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="?attr/colorSurface"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/back_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center_vertical"
-            android:padding="0dp"
-            android:text="←"
-            android:textSize="24sp"
-            android:textColor="?attr/colorPrimary"
-            style="@style/Widget.Material3.Button.TextButton" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/recipe_details"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorPrimary" />
-
-    </FrameLayout>
+    android:background="#ffffff">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/recipe_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/header_bar"
+        android:paddingBottom="120dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="8dp"
-            android:paddingBottom="32dp">
+            android:orientation="vertical">
 
-            <com.google.android.material.card.MaterialCardView
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="260dp"
-                app:cardBackgroundColor="?attr/colorSurface"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                android:layout_marginBottom="32dp">
+                android:layout_height="300dp"
+                android:paddingTop="24dp">
 
                 <ImageView
                     android:id="@+id/recipe_image"
@@ -65,167 +32,144 @@
                     android:scaleType="centerCrop"
                     android:contentDescription="@string/recipe_image" />
 
-            </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/back_button"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="top|start"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginTop="32dp"
+                    android:padding="0dp"
+                    app:icon="@drawable/ic_back"
+                    app:iconTint="#2a2a2a"
+                    app:iconSize="20dp"
+                    android:backgroundTint="#ffffff"
+                    style="@style/Widget.Material3.Button.IconButton" />
 
-            <TextView
-                android:id="@+id/recipe_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="36sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorPrimary"
-                android:lineSpacingMultiplier="1.1"
-                android:layout_marginBottom="4dp" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/favorite_button"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginEnd="56dp"
+                    android:layout_marginTop="32dp"
+                    android:padding="0dp"
+                    app:icon="@android:drawable/btn_star_big_off"
+                    app:iconTint="#7c4dff"
+                    app:iconSize="20dp"
+                    android:backgroundTint="#ffffff"
+                    style="@style/Widget.Material3.Button.IconButton" />
 
-            <View
-                android:layout_width="48dp"
-                android:layout_height="3dp"
-                android:background="@color/pink"
-                android:layout_marginBottom="24dp"
-                android:layout_marginTop="8dp" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/share_button"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginTop="32dp"
+                    android:padding="0dp"
+                    app:icon="@android:drawable/ic_menu_share"
+                    app:iconTint="#2a2a2a"
+                    app:iconSize="20dp"
+                    android:backgroundTint="#ffffff"
+                    style="@style/Widget.Material3.Button.IconButton" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/pink_light"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="3dp"
-                android:layout_marginBottom="32dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:paddingTop="18dp"
-                    android:paddingBottom="18dp"
-                    android:gravity="center_vertical"
-                    android:spacing="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⏱"
-                        android:textSize="32sp" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:spacing="4dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/cooking_time"
-                            android:textSize="12sp"
-                            android:textColor="@android:color/white"
-                            android:alpha="0.85" />
-
-        <TextView
-            android:id="@+id/time_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="20 minutes"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/ingredients"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginBottom="12dp"
-                android:layout_marginTop="4dp" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="?attr/colorSurfaceVariant"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="32dp">
-
-                <TextView
-                    android:id="@+id/ingredients_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="20dp"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:lineSpacingMultiplier="1.8"
-                    android:text="- Pasta\n- Eggs\n- Bacon\n- Cheese" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/instructions"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginBottom="12dp"
-                android:layout_marginTop="4dp" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="?attr/colorSurfaceVariant"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="2dp"
-                android:layout_marginBottom="24dp">
-
-                <TextView
-                    android:id="@+id/instructions_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="20dp"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:lineSpacingMultiplier="1.8"
-                    android:text="1. Boil pasta\n2. Fry bacon\n3. Mix eggs with cheese\n4. Combine all ingredients\n5. Serve hot" />
-
-            </com.google.android.material.card.MaterialCardView>
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:spacing="12dp">
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="24dp">
 
-                <com.google.android.material.button.MaterialButton
+                <TextView
+                    android:id="@+id/recipe_title"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="@string/start_cooking"
-                    android:textSize="16sp"
+                    android:layout_height="wrap_content"
+                    android:text="Recipe"
+                    android:textSize="26sp"
                     android:textStyle="bold"
-                    style="@style/Widget.Material3.Button" />
+                    android:textColor="#1a1a1a" />
 
-                <com.google.android.material.button.MaterialButton
+                <TextView
+                    android:id="@+id/time_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="30 min"
+                    android:textSize="14sp"
+                    android:textColor="#6f6f6f" />
+
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="@string/save_recipe"
-                    android:textSize="16sp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="#ececec" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ingredients"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    style="@style/Widget.Material3.Button.OutlinedButton" />
+                    android:textColor="#1a1a1a" />
+
+                <TextView
+                    android:id="@+id/ingredients_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textSize="15sp"
+                    android:textColor="#4a4a4a"
+                    android:lineSpacingMultiplier="1.6"
+                    android:text="- Pasta\n- Eggs\n- Bacon\n- Cheese" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/instructions"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#1a1a1a" />
+
+                <TextView
+                    android:id="@+id/instructions_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textSize="15sp"
+                    android:textColor="#4a4a4a"
+                    android:lineSpacingMultiplier="1.6"
+                    android:text="1. Boil pasta\n2. Fry bacon\n3. Mix eggs with cheese\n4. Combine all ingredients\n5. Serve hot" />
 
             </LinearLayout>
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/save_recipe_button"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/start_cooking"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="#7c4dff"
+        android:textColor="#ffffff"
+        app:cornerRadius="26dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/Widget.Material3.Button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

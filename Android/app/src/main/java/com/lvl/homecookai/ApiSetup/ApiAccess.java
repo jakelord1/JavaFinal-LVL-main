@@ -6,7 +6,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiAccess {
-    private static final String BASE_URL = "http://192.168.68.58:8080/homecook/";
+    private static final String BASE_URL = "http://192.168.1.2:8080/homecook/";
     private static Retrofit retrofit;
 
     public static Retrofit getClient() {

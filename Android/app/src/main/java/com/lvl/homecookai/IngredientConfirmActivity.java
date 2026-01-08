@@ -10,16 +10,17 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.flexbox.FlexWrap;
-import com.google.android.flexbox.FlexboxLayoutManager;
-import com.google.android.flexbox.JustifyContent;
 import com.lvl.homecookai.ApiSetup.ApiAccess;
 import com.lvl.homecookai.ApiSetup.MethodsToApi;
 import com.lvl.homecookai.database.AppDatabase;
@@ -29,7 +30,9 @@ import com.lvl.homecookai.database.Recipe;
 import com.lvl.homecookai.database.Recipe_Position;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,6 +41,7 @@ import retrofit2.Response;
 public class IngredientConfirmActivity extends AppCompatActivity {
 
     public static final String EXTRA_DETECTED_INGREDIENTS = "extra_detected_ingredients";
+    public static final String EXTRA_PREFILL_INGREDIENTS = "extra_prefill_ingredients";
     private static final String TAG = "IngredientConfirm";
 
     private IngredientAdapter ingredientAdapter;
@@ -57,15 +61,29 @@ public class IngredientConfirmActivity extends AppCompatActivity {
     private TextView resultsStatusText;
     private View resultsLoadingView;
     private View resultsEmptyView;
+    private String currentQuery = "";
 
     private List<Ingredient> allIngredients = new ArrayList<>();
     private boolean ingredientsLoaded = false;
     private MatchResultsAdapter resultsAdapter;
+    private List<String> prefillIngredients = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredient_confirm);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.ingredient_confirm_root), (v, insets) -> {
+            int top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            int bottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            v.setPadding(v.getPaddingLeft(), top, v.getPaddingRight(), bottom);
+            return insets;
+        });
+
+        List<String> prefill = getIntent().getStringArrayListExtra(EXTRA_PREFILL_INGREDIENTS);
+        if (prefill != null) {
+            prefillIngredients.addAll(prefill);
+        }
 
         AppDatabase database = AppDatabase.getDatabase(this);
         ingredientDao = database.ingredientDao();
@@ -96,7 +114,8 @@ public class IngredientConfirmActivity extends AppCompatActivity {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    filterIngredients(s.toString());
+                    currentQuery = s.toString();
+                    filterIngredients(currentQuery);
                 }
 
                 @Override
@@ -116,13 +135,25 @@ public class IngredientConfirmActivity extends AppCompatActivity {
         selectedCountText = findViewById(R.id.selected_count);
 
         if (selectedList != null) {
-            FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager(this);
-            flexboxLayoutManager.setFlexWrap(FlexWrap.WRAP);
-            flexboxLayoutManager.setJustifyContent(JustifyContent.FLEX_START);
-            selectedList.setLayoutManager(flexboxLayoutManager);
-            selectedAdapter = new SelectedIngredientAdapter(ingredient -> {
-                ingredientAdapter.removeIngredient(ingredient);
-                updateSelectedList();
+            selectedList.setLayoutManager(new LinearLayoutManager(this));
+            selectedAdapter = new SelectedIngredientAdapter(new SelectedIngredientAdapter.OnQuantityActionListener() {
+                @Override
+                public void onRemoveClicked(Ingredient ingredient) {
+                    ingredientAdapter.removeIngredient(ingredient);
+                    updateSelectedList();
+                }
+
+                @Override
+                public void onIncrementClicked(Ingredient ingredient) {
+                    ingredientAdapter.incrementIngredient(ingredient);
+                    updateSelectedList();
+                }
+
+                @Override
+                public void onDecrementClicked(Ingredient ingredient) {
+                    ingredientAdapter.decrementIngredient(ingredient);
+                    updateSelectedList();
+                }
             });
             selectedList.setAdapter(selectedAdapter);
         }
@@ -152,6 +183,7 @@ public class IngredientConfirmActivity extends AppCompatActivity {
                 selectedCountText.setText(String.valueOf(selected.size()));
             }
         }
+        refreshAvailableList();
     }
 
     private void handleBackPressed() {
@@ -187,6 +219,7 @@ public class IngredientConfirmActivity extends AppCompatActivity {
         setResultsStatusText("Searching for recipes...");
 
         List<Recipe_Position> positions = new ArrayList<>();
+        StringBuilder debugIds = new StringBuilder();
         for (var entry : selectedIngredients.entrySet()) {
             Ingredient ingredient = entry.getKey();
             int quantity = entry.getValue();
@@ -194,7 +227,12 @@ public class IngredientConfirmActivity extends AppCompatActivity {
             position.setIngredientId(ingredient.getId());
             position.setAmount(quantity);
             positions.add(position);
+            if (debugIds.length() > 0) {
+                debugIds.append(", ");
+            }
+            debugIds.append(ingredient.getName()).append("#").append(ingredient.getId());
         }
+        Log.d(TAG, "Search ingredient IDs: " + debugIds);
 
         MethodsToApi api = ApiAccess.getClient().create(MethodsToApi.class);
         Call<List<Recipe>> call = api.searchRecipes("search", positions);
@@ -216,7 +254,7 @@ public class IngredientConfirmActivity extends AppCompatActivity {
                     }
                 } else {
                     showResultsEmpty(true);
-                    setResultsStatusText("Could not load results");
+                    setResultsStatusText("Технические неполадки");
                 }
             }
 
@@ -224,7 +262,7 @@ public class IngredientConfirmActivity extends AppCompatActivity {
             public void onFailure(Call<List<Recipe>> call, Throwable t) {
                 showResultsLoading(false);
                 showResultsEmpty(true);
-                setResultsStatusText("Could not load results");
+                setResultsStatusText("Технические неполадки");
             }
         });
     }
@@ -268,8 +306,10 @@ public class IngredientConfirmActivity extends AppCompatActivity {
                             Log.d(TAG, "Updating UI with " + ingredients.size() + " ingredients");
                             showLoading(false);
                             if (ingredientAdapter != null) {
-                                ingredientAdapter.setItems(ingredients);
+                                ingredientAdapter.setAllIngredients(ingredients);
+                                ingredientAdapter.setItems(filterOutSelected(ingredients));
                                 showEmpty(false);
+                                applyPrefillSelections(ingredients);
                             }
                         });
                     }).start();
@@ -283,6 +323,7 @@ public class IngredientConfirmActivity extends AppCompatActivity {
                             Log.e(TAG, "Could not read error body", e);
                         }
                     }
+                    showTechnicalIssue();
                     loadIngredientsFromLocalDatabase();
                 }
             }
@@ -291,6 +332,7 @@ public class IngredientConfirmActivity extends AppCompatActivity {
             public void onFailure(Call<List<Ingredient>> call, Throwable t) {
                 Log.e(TAG, "API call failed: " + t.getMessage(), t);
                 t.printStackTrace();
+                showTechnicalIssue();
                 loadIngredientsFromLocalDatabase();
             }
         });
@@ -317,11 +359,13 @@ public class IngredientConfirmActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     showLoading(false);
                     if (ingredientAdapter != null) {
-                        ingredientAdapter.setItems(ingredients);
+                        ingredientAdapter.setAllIngredients(ingredients);
+                        ingredientAdapter.setItems(filterOutSelected(ingredients));
                         if (ingredients.isEmpty()) {
                             showEmpty(true);
                         } else {
                             showEmpty(false);
+                            applyPrefillSelections(ingredients);
                         }
                     }
                 });
@@ -395,7 +439,7 @@ public class IngredientConfirmActivity extends AppCompatActivity {
     private void filterIngredients(String query) {
         if (query.trim().isEmpty()) {
             if (ingredientAdapter != null) {
-                ingredientAdapter.setItems(allIngredients);
+                ingredientAdapter.setItems(filterOutSelected(allIngredients));
             }
         } else {
             String lowerQuery = query.toLowerCase().trim();
@@ -410,8 +454,55 @@ public class IngredientConfirmActivity extends AppCompatActivity {
             }
 
             if (ingredientAdapter != null) {
-                ingredientAdapter.setItems(filtered);
+                ingredientAdapter.setItems(filterOutSelected(filtered));
             }
         }
+    }
+
+    private void showTechnicalIssue() {
+        Toast.makeText(this, "Технические неполадки", Toast.LENGTH_SHORT).show();
+    }
+
+    private void applyPrefillSelections(List<Ingredient> ingredients) {
+        if (prefillIngredients == null || prefillIngredients.isEmpty() || ingredientAdapter == null) {
+            return;
+        }
+        Set<String> names = new HashSet<>();
+        for (String name : prefillIngredients) {
+            if (name != null && !name.trim().isEmpty()) {
+                names.add(name.trim().toLowerCase());
+            }
+        }
+        if (names.isEmpty()) {
+            return;
+        }
+        for (Ingredient ingredient : ingredients) {
+            String name = ingredient.getName();
+            if (name != null && names.contains(name.trim().toLowerCase())) {
+                ingredientAdapter.setQuantity(ingredient, 1);
+            }
+        }
+        updateSelectedList();
+    }
+
+    private void refreshAvailableList() {
+        filterIngredients(currentQuery);
+    }
+
+    private List<Ingredient> filterOutSelected(List<Ingredient> source) {
+        if (ingredientAdapter == null || source == null) {
+            return source;
+        }
+        var selectedIds = ingredientAdapter.getSelectedIngredientIds();
+        if (selectedIds.isEmpty()) {
+            return source;
+        }
+        List<Ingredient> result = new ArrayList<>();
+        for (Ingredient ingredient : source) {
+            if (!selectedIds.contains(ingredient.getId())) {
+                result.add(ingredient);
+            }
+        }
+        return result;
     }
 }

@@ -2,18 +2,18 @@ package com.lvl.homecookai;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.lvl.homecookai.ApiSetup.ApiAccess;
 import com.lvl.homecookai.ApiSetup.MethodsToApi;
 import com.lvl.homecookai.database.Recipe;
@@ -27,7 +27,10 @@ import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
+    private static final String TAG = "HomeFragment";
     private MethodsToApi api;
+    private HomeRecipeAdapter recommendedAdapter;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -39,25 +42,13 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextInputEditText inputRecipe = view.findViewById(R.id.inputRecipe);
-        View searchButton = view.findViewById(R.id.search_button);
+        View confirmIngredientsButton = view.findViewById(R.id.confirm_ingredients_button);
         View profileIcon = view.findViewById(R.id.profile_icon);
+        RecyclerView recommendedList = view.findViewById(R.id.recommended_list);
 
-        if (inputRecipe != null) {
-            inputRecipe.setOnEditorActionListener((v, actionId, event) -> {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                        (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                    submitSearch(inputRecipe.getText() == null ? "" : inputRecipe.getText().toString());
-                    return true;
-                }
-                return false;
-            });
-        }
-
-        if (searchButton != null) {
-            searchButton.setOnClickListener(v ->
-                    submitSearch(inputRecipe != null && inputRecipe.getText() != null
-                            ? inputRecipe.getText().toString() : ""));
+        if (confirmIngredientsButton != null) {
+            confirmIngredientsButton.setOnClickListener(v ->
+                    startActivity(new Intent(requireContext(), IngredientConfirmActivity.class)));
         }
 
         if (profileIcon != null) {
@@ -66,6 +57,14 @@ public class HomeFragment extends Fragment {
                     ((MainActivity) getActivity()).showProfile();
                 }
             });
+        }
+
+        if (recommendedList != null) {
+            recommendedList.setLayoutManager(
+                    new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+            recommendedAdapter = new HomeRecipeAdapter(this::openRecipeDetail);
+            recommendedList.setAdapter(recommendedAdapter);
+            loadRecommendedFromApi();
         }
     }
 
@@ -107,6 +106,46 @@ public class HomeFragment extends Fragment {
         //        intent.putStringArrayListExtra(MatchResultsActivity.EXTRA_INGREDIENTS,
         //                new ArrayList<>(ingredients));
         //        startActivity(intent);
+    }
+
+    private void loadRecommendedFromApi() {
+        api = ApiAccess.getClient().create(MethodsToApi.class);
+        api.getAllRecipes("all", 0).enqueue(new Callback<List<Recipe>>() {
+            @Override
+            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+                Log.d(TAG, "Recommended response code: " + response.code());
+                if (response.isSuccessful() && response.body() != null && recommendedAdapter != null) {
+                    List<Recipe> recipes = response.body();
+                    Log.d(TAG, "Recommended recipes count: " + recipes.size());
+                    recommendedAdapter.setItems(recipes);
+                    if (recipes.isEmpty() && getContext() != null) {
+                        Toast.makeText(getContext(), "Рецепты не найдены", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.d(TAG, "Recommended response body is null or not successful");
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), "Технические неполадки", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Recipe>> call, Throwable t) {
+                Log.e(TAG, "Recommended request failed", t);
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Технические неполадки", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void openRecipeDetail(Recipe recipe) {
+        if (recipe == null || getActivity() == null) {
+            return;
+        }
+        Intent intent = new Intent(getActivity(), RecipeDetailActivity.class);
+        intent.putExtra("recipe_id", recipe.getId());
+        startActivity(intent);
     }
     //Метод для получения всех рецептов(для показа элементов на глав. странице)
     //api.getAllRecipes("all", 1).enqueue(new Callback<List<Recipe>>() {

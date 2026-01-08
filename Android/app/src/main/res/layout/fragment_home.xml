@@ -61,36 +61,22 @@
             app:cardElevation="2dp"
             app:strokeWidth="0dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/inputLayout"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/confirm_ingredients_button"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Find recipes or ingredients..."
-                android:minHeight="48dp"
-                app:boxBackgroundColor="@android:color/transparent"
-                app:boxStrokeWidth="0dp"
-                app:hintEnabled="false"
-                app:startIconDrawable="@drawable/ic_search"
-                app:startIconTint="#999999">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/inputRecipe"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@android:color/transparent"
-                    android:gravity="center_vertical"
-                    android:imeOptions="actionSearch"
-                    android:inputType="text"
-                    android:paddingStart="8dp"
-                    android:paddingTop="12dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="12dp"
-                    android:textColor="#000000"
-                    android:hint="Find recipes or ingredients..."
-                    android:textColorHint="#999999" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="54dp"
+                android:layout_margin="8dp"
+                android:text="Search recipes"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:icon="@drawable/ic_search"
+                android:iconTint="#8a8a8a"
+                app:iconPadding="8dp"
+                android:gravity="center_vertical"
+                android:backgroundTint="#f3f3f6"
+                android:textColor="#2a2a2a"
+                app:cornerRadius="18dp"
+                style="@style/Widget.Material3.Button.OutlinedButton" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -392,148 +378,12 @@
                 android:textColor="#000000"
                 android:layout_marginBottom="8dp" />
 
-            <HorizontalScrollView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recommended_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:layout_marginBottom="4dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="140dp"
-                        android:layout_height="140dp"
-                        android:layout_marginEnd="12dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="0dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
-                                android:src="@drawable/avocado_toast"
-                                android:scaleType="centerCrop" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:background="#FFFFFF">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Avocado Toast"
-                                    android:textSize="12sp"
-                                    android:textColor="#000000"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="8dp"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginEnd="8dp"
-                                    android:layout_marginBottom="8dp" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="140dp"
-                        android:layout_height="140dp"
-                        android:layout_marginEnd="12dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="0dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
-                                android:src="@drawable/grilled_salmon"
-                                android:scaleType="centerCrop" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:background="#FFFFFF">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Grilled Salmon"
-                                    android:textSize="12sp"
-                                    android:textColor="#000000"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="8dp"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginEnd="8dp"
-                                    android:layout_marginBottom="8dp" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="140dp"
-                        android:layout_height="140dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="2dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="1"
-                                android:src="@drawable/grill"
-                                android:scaleType="centerCrop" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:background="#FFFFFF">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Grill"
-                                    android:textSize="12sp"
-                                    android:textColor="#000000"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="8dp"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginEnd="8dp"
-                                    android:layout_marginBottom="8dp" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                </LinearLayout>
-
-            </HorizontalScrollView>
+                android:clipToPadding="false"
+                android:paddingBottom="4dp" />
 
         </LinearLayout>
 

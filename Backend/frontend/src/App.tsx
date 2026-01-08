@@ -16,6 +16,7 @@ function App() {
             <Route path="/homecook/recipe/new" element={<RecipeForm />} />
             <Route path="/homecook/recipe/:id" element={<RecipeForm />} />
             <Route path="/homecook/" element={<Recipes />} />
+            {/* <Route path="*" element={<Navigate to="/homecook/" replace />} /> */}
           </Routes>
         </div>
       </div>

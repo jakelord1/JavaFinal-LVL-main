@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.bumptech.glide.Glide;
 import com.lvl.homecookai.database.Recipe;
 
 import java.util.ArrayList;
@@ -70,8 +71,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
         void bind(Recipe recipe, OnRecipeClickListener listener) {
             recipeName.setText(recipe.getDish_name());
-            recipeTime.setText(recipe.getCook_time());
-            //recipeImage.setImageResource(recipe.imageResId);
+            recipeTime.setText(recipe.getCook_time() + " мин");
+            Glide.with(itemView.getContext())
+                    .load(recipe.getImage())
+                    .placeholder(R.drawable.ic_camera)
+                    .into(recipeImage);
 
             View.OnClickListener clickListener = v -> listener.onRecipeClick(recipe);
             itemView.setOnClickListener(clickListener);

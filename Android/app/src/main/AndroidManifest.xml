@@ -35,6 +35,10 @@
             android:name=".MatchResultsActivity"
             android:exported="false"
             android:label="@string/matched_recipes" />
+        <activity
+            android:name=".IngredientConfirmActivity"
+            android:exported="false"
+            android:label="@string/confirm_ingredients_title" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
