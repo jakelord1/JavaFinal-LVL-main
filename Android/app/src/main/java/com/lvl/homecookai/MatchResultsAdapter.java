@@ -74,13 +74,13 @@ public class MatchResultsAdapter extends RecyclerView.Adapter<MatchResultsAdapte
             recipeName.setText(match.getDish_name());
             recipeTime.setText(match.getCook_time() + " мин");
 
-            // если image — это URL
+            
             Glide.with(itemView.getContext())
                     .load(match.getImage())
                     .placeholder(R.drawable.ic_launcher_foreground)
                     .into(recipeImage);
 
-            // если процент совпадения не используется — можно скрыть
+            
             matchPercent.setVisibility(View.GONE);
 
             View.OnClickListener clickListener = v -> listener.onRecipeClick(match);

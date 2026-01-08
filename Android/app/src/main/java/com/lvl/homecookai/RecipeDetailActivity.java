@@ -1,18 +1,21 @@
 package com.lvl.homecookai;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.button.MaterialButton;
 import com.bumptech.glide.Glide;
 import com.lvl.homecookai.ApiSetup.ApiAccess;
 import com.lvl.homecookai.ApiSetup.MethodsToApi;
@@ -33,10 +36,11 @@ public class RecipeDetailActivity extends AppCompatActivity {
     private TextView ingredientsText;
     private TextView timeText;
     private TextView instructionsText;
-    private MaterialButton saveButton;
-    private MaterialButton backButton;
+    private ImageButton backButton;
+    private ImageButton favoriteButton;
     private RecipeDao recipeDao;
     private Recipe currentRecipe;
+    private boolean isSaved;
 
     private MethodsToApi api;
 
@@ -45,21 +49,35 @@ public class RecipeDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(Color.WHITE);
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (controller != null) {
+            controller.setAppearanceLightStatusBars(true);
+        }
 
         recipeImage = findViewById(R.id.recipe_image);
         recipeTitleText = findViewById(R.id.recipe_title);
         ingredientsText = findViewById(R.id.ingredients_text);
         timeText = findViewById(R.id.time_text);
         instructionsText = findViewById(R.id.instructions_text);
-        saveButton = findViewById(R.id.save_recipe_button);
         backButton = findViewById(R.id.back_button);
+        favoriteButton = findViewById(R.id.favorite_button);
         recipeDao = AppDatabase.getDatabase(this).recipeDao();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.recipe_detail_root), (v, insets) -> {
-            int top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
             int bottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
-            v.setPadding(v.getPaddingLeft(), top, v.getPaddingRight(), bottom);
+            v.setPadding(v.getPaddingLeft(), 0, v.getPaddingRight(), bottom);
             return insets;
         });
+        View header = findViewById(R.id.recipe_header);
+        if (header != null) {
+            int baseTop = header.getPaddingTop();
+            ViewCompat.setOnApplyWindowInsetsListener(header, (v, insets) -> {
+                int top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+                v.setPadding(v.getPaddingLeft(), baseTop + top, v.getPaddingRight(), v.getPaddingBottom());
+                return insets;
+            });
+        }
         try {
 
 
@@ -75,7 +93,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                     currentRecipe = recipe;
 
                     recipeTitleText.setText(recipe.getDish_name());
-                    timeText.setText(recipe.getCook_time() + " мин");
+                    timeText.setText(recipe.getCook_time() + " " + getString(R.string.minutes_short));
                     instructionsText.setText(recipe.getRecipe_fulltext());
 
                     StringBuilder ingredientsBuilder = new StringBuilder();
@@ -99,6 +117,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                             .load(recipe.getImage())
                             .placeholder(R.drawable.ic_launcher_foreground)
                             .into(recipeImage);
+                    loadSavedState(recipe.getId());
 
                 }
             }
@@ -106,8 +125,8 @@ public class RecipeDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Recipe> call, Throwable t) {
                 Toast.makeText(RecipeDetailActivity.this,
-                        "Ошибка загрузки рецепта", Toast.LENGTH_SHORT).show();
-                Log.e("API_ERROR", "Ошибка при запросе рецепта: " + t.getMessage(), t);
+                        getString(R.string.error_loading_recipe), Toast.LENGTH_SHORT).show();
+                Log.e("API_ERROR", "Failed to load recipe: " + t.getMessage(), t);
             }
         });
     }
@@ -115,23 +134,54 @@ public class RecipeDetailActivity extends AppCompatActivity {
             Log.e("Debug",exception.getMessage(), exception);
         }
 
-        if (saveButton != null) {
-            saveButton.setOnClickListener(v -> saveRecipeToHistory());
-        }
         if (backButton != null) {
             backButton.setOnClickListener(v -> finish());
         }
+        if (favoriteButton != null) {
+            favoriteButton.setOnClickListener(v -> toggleSaved());
+        }
     }
-
-    private void saveRecipeToHistory() {
+    private void toggleSaved() {
         if (currentRecipe == null) {
-            Toast.makeText(this, "Рецепт ещё не загружен", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.recipe_not_loaded), Toast.LENGTH_SHORT).show();
             return;
         }
         new Thread(() -> {
-            recipeDao.insertRecipe(currentRecipe);
-            runOnUiThread(() ->
-                    Toast.makeText(this, getString(R.string.save_recipe), Toast.LENGTH_SHORT).show());
+            if (isSaved) {
+                recipeDao.deleteRecipe(currentRecipe);
+            } else {
+                recipeDao.insertRecipe(currentRecipe);
+            }
+            isSaved = !isSaved;
+            runOnUiThread(() -> {
+                updateFavoriteUi();
+                int message = isSaved ? R.string.recipe_saved : R.string.recipe_removed;
+                Toast.makeText(this, getString(message), Toast.LENGTH_SHORT).show();
+            });
         }).start();
     }
+
+    private void loadSavedState(long recipeId) {
+        new Thread(() -> {
+            isSaved = recipeDao.getRecipeById(recipeId) != null;
+            runOnUiThread(this::updateFavoriteUi);
+        }).start();
+    }
+
+    private void updateFavoriteUi() {
+        if (favoriteButton == null) {
+            return;
+        }
+        int icon = isSaved
+                ? R.drawable.ic_star_filled
+                : R.drawable.ic_star_outline;
+        favoriteButton.setImageResource(icon);
+    }
 }
+
+
+
+
+
+
+

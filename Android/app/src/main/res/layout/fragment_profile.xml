@@ -56,7 +56,7 @@
                     <ImageView
                         android:layout_width="68dp"
                         android:layout_height="68dp"
-                        android:src="@drawable/ic_profile_avatar"
+                        android:src="@drawable/ic_profile"
                         android:background="@drawable/circle_image_background"
                         android:padding="4dp"
                         android:contentDescription="@string/profile" />
@@ -68,39 +68,32 @@
                         android:orientation="vertical"
                         android:layout_marginStart="12dp">
 
-                        <TextView
+                        <EditText
                             android:id="@+id/profile_name"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:hint="@string/profile_name_hint"
                             android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="#000000" />
-
-                        <TextView
-                            android:id="@+id/profile_headline"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:textColor="#666666"
-                            android:layout_marginTop="4dp" />
-
-                        <TextView
-                            android:id="@+id/profile_email"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:textColor="#666666"
-                            android:layout_marginTop="8dp" />
-
-                        <TextView
-                            android:id="@+id/profile_location"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:textColor="#666666"
-                            android:layout_marginTop="2dp" />
+                            android:textColor="#000000"
+                            android:background="@android:color/transparent"
+                            android:singleLine="true"
+                            android:inputType="textPersonName"
+                            android:enabled="false"
+                            android:focusable="false"
+                            android:cursorVisible="false" />
 
                     </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/profile_edit_button"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/edit_profile"
+                        android:src="@drawable/ic_edit"
+                        android:tint="#6f6f7a"
+                        android:layout_marginStart="8dp" />
 
                 </LinearLayout>
 
@@ -263,12 +256,16 @@
                     android:textColor="#000000"
                     android:layout_marginBottom="8dp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/profile_pref_value_edit"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/profile_pref_value"
+                    android:hint="@string/profile_pref_hint"
                     android:textSize="12sp"
-                    android:textColor="#666666" />
+                    android:textColor="#666666"
+                    android:background="@android:color/transparent"
+                    android:inputType="textCapSentences"
+                    android:singleLine="true" />
 
             </LinearLayout>
 

@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.Button;
@@ -25,6 +26,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -35,14 +38,13 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,8 +57,10 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     private FragmentManager fragmentManager;
     private View scanFoodButton;
+    private View processingOverlay;
     private String currentPhotoPath;
     private Bitmap currentBitmap;
+    private String currentImageUri;
     private GeminiService geminiService;
     private PromptManager promptManager;
 
@@ -65,9 +69,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (controller != null) {
+            controller.setAppearanceLightStatusBars(true);
+        }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            // Only apply top inset so bottom nav doesn't get extra gap.
+            
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
@@ -77,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         geminiService = new GeminiService();
         promptManager = new PromptManager(this);
         scanFoodButton = findViewById(R.id.fab_scan_food);
+        processingOverlay = findViewById(R.id.home_processing_overlay);
 
         makeImageViewsCircular();
 
@@ -223,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
         if (currentPhotoPath != null) {
             currentBitmap = BitmapFactory.decodeFile(currentPhotoPath);
             if (currentBitmap != null) {
+                currentImageUri = "file://" + currentPhotoPath;
                 sendImageToGemini(currentBitmap);
             }
         }
@@ -236,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
                 inputStream.close();
             }
             if (currentBitmap != null) {
+                currentImageUri = persistImageToCache(imageUri);
                 sendImageToGemini(currentBitmap);
             }
         } catch (Exception e) {
@@ -246,18 +258,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendImageToGemini(Bitmap bitmap) {
         String prompt = promptManager.getDefaultPrompt();
+        setProcessing(true);
 
         Futures.addCallback(
                 geminiService.generateContentWithImage(bitmap, prompt),
                 new FutureCallback<String>() {
                     @Override
                     public void onSuccess(String result) {
-                        List<String> ingredients = parseIngredients(result);
-                        openMatchResults(ingredients);
+                        String cleanedJson = extractJson(result);
+                        java.util.LinkedHashMap<String, Integer> parsed = parseIngredientQuantities(cleanedJson);
+                        String summary = parseSummary(cleanedJson, parsed);
+                        saveRecentScan(currentImageUri, summary);
+                        setProcessing(false);
+                        openIngredientConfirm(new ArrayList<>(parsed.keySet()), new ArrayList<>(parsed.values()));
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
+                        setProcessing(false);
                         new MaterialAlertDialogBuilder(MainActivity.this)
                                 .setTitle(getString(R.string.recognition_failed))
                                 .setMessage(getString(R.string.error_occurred, String.valueOf(t.getMessage())))
@@ -269,6 +287,21 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    private void setProcessing(boolean show) {
+        if (processingOverlay == null) {
+            return;
+        }
+        processingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    private void openIngredientConfirm(ArrayList<String> ingredients, ArrayList<Integer> quantities) {
+        Intent intent = new Intent(this, IngredientConfirmActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putStringArrayListExtra(IngredientConfirmActivity.EXTRA_PREFILL_INGREDIENTS, ingredients);
+        intent.putIntegerArrayListExtra(IngredientConfirmActivity.EXTRA_PREFILL_QUANTITIES, quantities);
+        startActivity(intent);
+    }
+
     private void openMatchResults(List<String> ingredients) {
         Intent intent = new Intent(this, MatchResultsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -277,32 +310,150 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private List<String> parseIngredients(String result) {
-        List<String> parsed = new ArrayList<>();
-        String json = result;
-        int start = result.indexOf('{');
-        int end = result.lastIndexOf('}');
-        if (start != -1 && end != -1 && end > start) {
-            json = result.substring(start, end + 1);
+    private java.util.LinkedHashMap<String, Integer> parseIngredientQuantities(String result) {
+        java.util.LinkedHashMap<String, Integer> parsed = new java.util.LinkedHashMap<>();
+        if (result == null || result.isEmpty()) {
+            return parsed;
         }
+        String json = result;
         try {
             org.json.JSONObject root = new org.json.JSONObject(json);
             org.json.JSONArray array = root.optJSONArray("ingredients");
             if (array != null) {
-                Set<String> unique = new LinkedHashSet<>();
                 for (int i = 0; i < array.length(); i++) {
-                    String item = array.optString(i, "").trim();
-                    if (!item.isEmpty()) {
-                        unique.add(item.toLowerCase(Locale.US));
+                    Object item = array.opt(i);
+                    String name = "";
+                    int quantity = 1;
+                    if (item instanceof org.json.JSONObject) {
+                        org.json.JSONObject obj = (org.json.JSONObject) item;
+                        name = obj.optString("name", "").trim();
+                        quantity = obj.optInt("quantity", 1);
+                    } else if (item != null) {
+                        name = String.valueOf(item).trim();
+                    }
+                    if (!name.isEmpty()) {
+                        if (quantity <= 0) {
+                            quantity = 1;
+                        }
+                        String key = name.toLowerCase(Locale.US);
+                        int current = parsed.getOrDefault(key, 0);
+                        parsed.put(key, current + quantity);
                     }
                 }
-                parsed.addAll(unique);
             }
         } catch (Exception e) {
             Toast.makeText(this, getString(R.string.error_parsing_json),
                     Toast.LENGTH_SHORT).show();
         }
         return parsed;
+    }
+
+    private String parseSummary(String result, java.util.LinkedHashMap<String, Integer> ingredients) {
+        String summary = "";
+        if (result != null && !result.isEmpty()) {
+            try {
+                org.json.JSONObject root = new org.json.JSONObject(result);
+                summary = root.optString("summary", "").trim();
+            } catch (Exception ignored) {
+            }
+        }
+        if (summary.isEmpty()) {
+            summary = buildSummaryFromIngredients(ingredients);
+        }
+        if (summary.isEmpty()) {
+            summary = "Scan";
+        }
+        summary = trimSummary(summary);
+        return summary;
+    }
+
+    private String buildSummaryFromIngredients(java.util.LinkedHashMap<String, Integer> ingredients) {
+        if (ingredients == null || ingredients.isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        int count = 0;
+        for (String name : ingredients.keySet()) {
+            if (name == null || name.trim().isEmpty()) {
+                continue;
+            }
+            if (count > 0) {
+                builder.append(", ");
+            }
+            builder.append(name.trim());
+            count++;
+            if (count >= 2) {
+                break;
+            }
+        }
+        String summary = builder.toString().trim();
+        if (summary.length() > 32) {
+            summary = summary.substring(0, 32).trim();
+        }
+        return summary;
+    }
+
+    private String trimSummary(String summary) {
+        if (summary == null) {
+            return "";
+        }
+        String[] parts = summary.trim().split("\\s+");
+        if (parts.length <= 3) {
+            return summary.trim();
+        }
+        return (parts[0] + " " + parts[1] + " " + parts[2]).trim();
+    }
+
+    private void saveRecentScan(String imageUri, String summary) {
+        if (imageUri == null || imageUri.trim().isEmpty()) {
+            return;
+        }
+        com.lvl.homecookai.database.AppDatabase db =
+                com.lvl.homecookai.database.AppDatabase.getDatabase(this);
+        com.lvl.homecookai.database.RecentScanDao dao = db.recentScanDao();
+        new Thread(() -> {
+            dao.insert(new com.lvl.homecookai.database.RecentScan(imageUri, summary, System.currentTimeMillis()));
+            dao.trimToLimit(20);
+        }).start();
+    }
+
+    private String persistImageToCache(Uri imageUri) {
+        if (imageUri == null) {
+            return null;
+        }
+        try (InputStream inputStream = getContentResolver().openInputStream(imageUri)) {
+            if (inputStream == null) {
+                return null;
+            }
+            File cacheDir = new File(getCacheDir(), "recent_scans");
+            if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+                return null;
+            }
+            File outFile = File.createTempFile("scan_", ".jpg", cacheDir);
+            try (FileOutputStream outputStream = new FileOutputStream(outFile)) {
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, read);
+                }
+            }
+            return "file://" + outFile.getAbsolutePath();
+        } catch (Exception e) {
+            Log.e("MainActivity", "Failed to cache image", e);
+            return imageUri.toString();
+        }
+    }
+
+    private String extractJson(String input) {
+        if (input == null) {
+            return "";
+        }
+        int start = input.indexOf('{');
+        int end = input.lastIndexOf('}');
+        if (start >= 0 && end > start) {
+            return input.substring(start, end + 1).trim();
+        }
+        return input.trim();
     }
 
     private File createImageFile() {
@@ -345,7 +496,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void makeImageViewsCircular() {
-        // Find all category ImageViews and make them circular
+        
         View rootView = findViewById(R.id.popular_categories_container);
         if (rootView != null) {
             findAndMakeCircular(rootView);
@@ -355,7 +506,7 @@ public class MainActivity extends AppCompatActivity {
     private void findAndMakeCircular(View view) {
         if (view instanceof ImageView) {
             ImageView imageView = (ImageView) view;
-            // Set outline provider for circular clipping after view is measured
+            
             imageView.post(() -> {
                 int size = Math.min(imageView.getWidth(), imageView.getHeight());
                 imageView.setOutlineProvider(new ViewOutlineProvider() {

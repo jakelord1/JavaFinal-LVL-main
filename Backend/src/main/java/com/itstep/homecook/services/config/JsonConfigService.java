@@ -59,9 +59,9 @@ public class JsonConfigService implements ConfigService {
             jsonObject = element.getAsJsonObject();
         }
         return jsonObject.get(parts[parts.length - 1]).getAsString();
-//        root.getAsJsonObject()
-//                .get("connectionStrings").getAsJsonObject()
-//                .get("mainDb").getAsString()
+
+
+
     }
 
 }

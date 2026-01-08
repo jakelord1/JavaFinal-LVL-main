@@ -30,9 +30,7 @@ import com.lvl.homecookai.database.Recipe;
 import com.lvl.homecookai.database.Recipe_Position;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,6 +40,7 @@ public class IngredientConfirmActivity extends AppCompatActivity {
 
     public static final String EXTRA_DETECTED_INGREDIENTS = "extra_detected_ingredients";
     public static final String EXTRA_PREFILL_INGREDIENTS = "extra_prefill_ingredients";
+    public static final String EXTRA_PREFILL_QUANTITIES = "extra_prefill_quantities";
     private static final String TAG = "IngredientConfirm";
 
     private IngredientAdapter ingredientAdapter;
@@ -66,7 +65,7 @@ public class IngredientConfirmActivity extends AppCompatActivity {
     private List<Ingredient> allIngredients = new ArrayList<>();
     private boolean ingredientsLoaded = false;
     private MatchResultsAdapter resultsAdapter;
-    private List<String> prefillIngredients = new ArrayList<>();
+    private final java.util.Map<String, Integer> prefillQuantities = new java.util.HashMap<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,8 +80,24 @@ public class IngredientConfirmActivity extends AppCompatActivity {
         });
 
         List<String> prefill = getIntent().getStringArrayListExtra(EXTRA_PREFILL_INGREDIENTS);
+        ArrayList<Integer> prefillQty = getIntent().getIntegerArrayListExtra(EXTRA_PREFILL_QUANTITIES);
         if (prefill != null) {
-            prefillIngredients.addAll(prefill);
+            for (int i = 0; i < prefill.size(); i++) {
+                String name = prefill.get(i);
+                if (name == null || name.trim().isEmpty()) {
+                    continue;
+                }
+                int quantity = 1;
+                if (prefillQty != null && i < prefillQty.size()) {
+                    Integer provided = prefillQty.get(i);
+                    if (provided != null && provided > 0) {
+                        quantity = provided;
+                    }
+                }
+                String key = name.trim().toLowerCase();
+                int current = prefillQuantities.getOrDefault(key, 0);
+                prefillQuantities.put(key, current + quantity);
+            }
         }
 
         AppDatabase database = AppDatabase.getDatabase(this);
@@ -125,9 +140,10 @@ public class IngredientConfirmActivity extends AppCompatActivity {
 
         if (ingredientsList != null) {
             ingredientsList.setLayoutManager(new LinearLayoutManager(this));
-            ingredientAdapter = new IngredientAdapter(selected -> {
-                updateSelectedList();
-            });
+            ingredientAdapter = new IngredientAdapter(
+                    selected -> updateSelectedList(),
+                    this::showQuantityInputDialog
+            );
             ingredientsList.setAdapter(ingredientAdapter);
         }
 
@@ -154,6 +170,11 @@ public class IngredientConfirmActivity extends AppCompatActivity {
                     ingredientAdapter.decrementIngredient(ingredient);
                     updateSelectedList();
                 }
+
+                @Override
+                public void onQuantityClicked(Ingredient ingredient, int currentQuantity, String unit) {
+                    showQuantityInputDialog(ingredient, currentQuantity, unit);
+                }
             });
             selectedList.setAdapter(selectedAdapter);
         }
@@ -177,7 +198,7 @@ public class IngredientConfirmActivity extends AppCompatActivity {
     private void updateSelectedList() {
         if (ingredientAdapter != null && selectedAdapter != null) {
             var selected = ingredientAdapter.getSelectedIngredients();
-            selectedAdapter.setItems(selected);
+            selectedAdapter.setItems(selected, ingredientAdapter.getSelectedIngredientUnits());
             
             if (selectedCountText != null) {
                 selectedCountText.setText(String.valueOf(selected.size()));
@@ -226,6 +247,9 @@ public class IngredientConfirmActivity extends AppCompatActivity {
             Recipe_Position position = new Recipe_Position();
             position.setIngredientId(ingredient.getId());
             position.setAmount(quantity);
+            if (ingredientAdapter != null) {
+                position.setUnit(ingredientAdapter.getUnitFor(ingredient));
+            }
             positions.add(position);
             if (debugIds.length() > 0) {
                 debugIds.append(", ");
@@ -463,23 +487,76 @@ public class IngredientConfirmActivity extends AppCompatActivity {
         Toast.makeText(this, "Технические неполадки", Toast.LENGTH_SHORT).show();
     }
 
-    private void applyPrefillSelections(List<Ingredient> ingredients) {
-        if (prefillIngredients == null || prefillIngredients.isEmpty() || ingredientAdapter == null) {
+    private void showQuantityInputDialog(Ingredient ingredient, int currentQuantity, String unit) {
+        if (ingredient == null || ingredientAdapter == null) {
             return;
         }
-        Set<String> names = new HashSet<>();
-        for (String name : prefillIngredients) {
-            if (name != null && !name.trim().isEmpty()) {
-                names.add(name.trim().toLowerCase());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_quantity_unit, null);
+        com.google.android.material.textfield.TextInputEditText input =
+                dialogView.findViewById(R.id.quantity_input);
+        android.widget.RadioGroup unitGroup = dialogView.findViewById(R.id.unit_group);
+        android.widget.RadioButton pcs = dialogView.findViewById(R.id.unit_pcs);
+        android.widget.RadioButton grams = dialogView.findViewById(R.id.unit_g);
+        android.widget.RadioButton ml = dialogView.findViewById(R.id.unit_ml);
+
+        if (input != null) {
+            input.setText(String.valueOf(Math.max(1, currentQuantity)));
+            if (input.getText() != null) {
+                input.setSelection(input.getText().length());
             }
         }
-        if (names.isEmpty()) {
+        String safeUnit = unit == null ? "pcs" : unit.trim();
+        if ("g".equals(safeUnit)) {
+            grams.setChecked(true);
+        } else if ("ml".equals(safeUnit)) {
+            ml.setChecked(true);
+        } else {
+            pcs.setChecked(true);
+        }
+
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(ingredient.getName())
+                .setView(dialogView)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    String text = input.getText() != null ? input.getText().toString().trim() : "";
+                    if (text.isEmpty()) {
+                        return;
+                    }
+                    try {
+                        int value = Integer.parseInt(text);
+                        if (value < 1) {
+                            value = 1;
+                        }
+                        String selectedUnit = "pcs";
+                        if (unitGroup != null) {
+                            int checkedId = unitGroup.getCheckedRadioButtonId();
+                            if (checkedId == grams.getId()) {
+                                selectedUnit = "g";
+                            } else if (checkedId == ml.getId()) {
+                                selectedUnit = "ml";
+                            }
+                        }
+                        ingredientAdapter.setQuantity(ingredient, value);
+                        ingredientAdapter.setUnit(ingredient, selectedUnit);
+                        updateSelectedList();
+                    } catch (NumberFormatException ignored) {
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void applyPrefillSelections(List<Ingredient> ingredients) {
+        if (prefillQuantities.isEmpty() || ingredientAdapter == null) {
             return;
         }
         for (Ingredient ingredient : ingredients) {
             String name = ingredient.getName();
-            if (name != null && names.contains(name.trim().toLowerCase())) {
-                ingredientAdapter.setQuantity(ingredient, 1);
+            if (name != null) {
+                Integer quantity = prefillQuantities.get(name.trim().toLowerCase());
+                if (quantity != null && quantity > 0) {
+                    ingredientAdapter.setQuantity(ingredient, quantity);
+                }
             }
         }
         updateSelectedList();

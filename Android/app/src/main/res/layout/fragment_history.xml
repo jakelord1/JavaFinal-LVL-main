@@ -34,7 +34,7 @@
             android:id="@+id/profile_icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/ic_profile_avatar"
+            android:src="@drawable/ic_profile"
             android:contentDescription="@string/profile" />
 
     </LinearLayout>

@@ -43,7 +43,7 @@
                 android:id="@+id/profile_icon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_profile_avatar"
+                android:src="@drawable/ic_profile"
                 android:contentDescription="Profile" />
 
         </LinearLayout>
@@ -57,26 +57,41 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             app:cardBackgroundColor="#FFFFFF"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:strokeWidth="0dp">
+            app:cardCornerRadius="18dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#e6e6ee">
 
-            <com.google.android.material.button.MaterialButton
+            <LinearLayout
                 android:id="@+id/confirm_ingredients_button"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_margin="8dp"
-                android:text="Search recipes"
-                android:textAllCaps="false"
-                android:textSize="15sp"
-                android:icon="@drawable/ic_search"
-                android:iconTint="#8a8a8a"
-                app:iconPadding="8dp"
+                android:layout_height="48dp"
+                android:layout_margin="6dp"
+                android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:backgroundTint="#f3f3f6"
-                android:textColor="#2a2a2a"
-                app:cornerRadius="18dp"
-                style="@style/Widget.Material3.Button.OutlinedButton" />
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:background="@android:color/transparent"
+                android:foreground="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_search"
+                    android:tint="#6f6f7a"
+                    android:contentDescription="@string/search" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Search recipes"
+                    android:textSize="14sp"
+                    android:textColor="#2f2f35" />
+
+            </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -99,130 +114,52 @@
                 android:textColor="#000000"
                 android:layout_marginBottom="8dp" />
 
-            <HorizontalScrollView
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/recent_scans_empty_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:layout_marginBottom="4dp">
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#e2e2e8"
+                app:cardBackgroundColor="#ffffff"
+                android:visibility="gone">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="140dp"
-                        android:layout_height="100dp"
-                        android:layout_marginEnd="12dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="2dp">
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_camera"
+                        android:contentDescription="@string/recent_scan_thumbnail"
+                        android:tint="?attr/colorPrimary"
+                        android:layout_marginEnd="12dp" />
 
-                        <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/tomatoes"
-                                android:scaleType="centerCrop" />
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:background="@drawable/bottom_gradient_shadow"
-                                android:layout_gravity="bottom" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Tomatoes"
-                                android:textSize="12sp"
-                                android:textColor="#FFFFFF"
-                                android:textStyle="bold"
-                                android:layout_gravity="bottom|center_horizontal"
-                                android:layout_marginBottom="8dp" />
-
-                        </FrameLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="140dp"
-                        android:layout_height="100dp"
-                        android:layout_marginEnd="12dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="2dp">
-
-                        <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/chicken"
-                                android:scaleType="centerCrop" />
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:background="@drawable/bottom_gradient_shadow"
-                                android:layout_gravity="bottom" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Chicken"
-                                android:textSize="12sp"
-                                android:textColor="#FFFFFF"
-                                android:textStyle="bold"
-                                android:layout_gravity="bottom|center_horizontal"
-                                android:layout_marginBottom="8dp" />
-
-                        </FrameLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="140dp"
-                        android:layout_height="100dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="2dp">
-
-                        <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/soup"
-                                android:scaleType="centerCrop" />
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:background="@drawable/bottom_gradient_shadow"
-                                android:layout_gravity="bottom" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Soup"
-                                android:textSize="12sp"
-                                android:textColor="#FFFFFF"
-                                android:textStyle="bold"
-                                android:layout_gravity="bottom|center_horizontal"
-                                android:layout_marginBottom="8dp" />
-
-                        </FrameLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
+                    <TextView
+                        android:id="@+id/recent_scans_empty"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/recent_scans_empty"
+                        android:textSize="13sp"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
 
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-            </HorizontalScrollView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recent_scans_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingBottom="4dp"
+                android:overScrollMode="never" />
 
         </LinearLayout>
 

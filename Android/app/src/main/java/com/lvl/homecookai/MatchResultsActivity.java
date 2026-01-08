@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +36,12 @@ public class MatchResultsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_match_results);
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (controller != null) {
+            controller.setAppearanceLightStatusBars(true);
+        }
+        getWindow().setStatusBarColor(android.graphics.Color.WHITE);
 
         TextView detectedText = findViewById(R.id.detected_ingredients);
         TextView matchCount = findViewById(R.id.match_count);
@@ -41,10 +49,15 @@ public class MatchResultsActivity extends AppCompatActivity {
         View emptyState = findViewById(R.id.empty_state);
         View emptyBackButton = findViewById(R.id.empty_back_button);
         View profileIcon = findViewById(R.id.profile_icon);
+        View loadingView = findViewById(R.id.match_loading_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         String json = getIntent().getStringExtra(EXTRA_RECIPES);
         List<Recipe> recipes = new ArrayList<>();
+
+        if (loadingView != null) {
+            loadingView.setVisibility(View.VISIBLE);
+        }
 
         if (json != null) {
             Type type = new TypeToken<List<Recipe>>(){}.getType();
@@ -61,6 +74,9 @@ public class MatchResultsActivity extends AppCompatActivity {
         recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
         if (emptyState != null) {
             emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
+        if (loadingView != null) {
+            loadingView.setVisibility(View.GONE);
         }
 
         if (emptyBackButton != null) {

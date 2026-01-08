@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,11 +38,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -60,6 +59,7 @@ public class CameraFragment extends Fragment {
     private View resultCard;
     private String currentPhotoPath;
     private Bitmap currentBitmap;
+    private String currentImageUri;
     private GeminiService geminiService;
     private PromptManager promptManager;
 
@@ -178,6 +178,7 @@ public class CameraFragment extends Fragment {
             currentBitmap = BitmapFactory.decodeFile(currentPhotoPath);
             if (currentBitmap != null) {
                 cameraPreview.setImageBitmap(currentBitmap);
+                currentImageUri = "file://" + currentPhotoPath;
                 sendImageToGemini(currentBitmap);
             }
         }
@@ -192,6 +193,7 @@ public class CameraFragment extends Fragment {
             }
             if (currentBitmap != null) {
                 cameraPreview.setImageBitmap(currentBitmap);
+                currentImageUri = persistImageToCache(imageUri);
                 sendImageToGemini(currentBitmap);
             }
         } catch (Exception e) {
@@ -255,8 +257,10 @@ public class CameraFragment extends Fragment {
                         if (isAdded()) {
                             showLoading(false);
                             String cleanedJson = extractJson(result);
-                            ArrayList<String> ingredients = parseIngredients(cleanedJson);
-                            openIngredientConfirm(ingredients);
+                            java.util.LinkedHashMap<String, Integer> parsed = parseIngredientQuantities(cleanedJson);
+                            String summary = parseSummary(cleanedJson, parsed);
+                            saveRecentScan(currentImageUri, summary);
+                            openIngredientConfirm(new ArrayList<>(parsed.keySet()), new ArrayList<>(parsed.values()));
                         }
                     }
 
@@ -294,14 +298,15 @@ public class CameraFragment extends Fragment {
     }
 
 
-    private void openIngredientConfirm(ArrayList<String> ingredients) {
+    private void openIngredientConfirm(ArrayList<String> ingredients, ArrayList<Integer> quantities) {
         Intent intent = new Intent(requireContext(), IngredientConfirmActivity.class);
         intent.putStringArrayListExtra(IngredientConfirmActivity.EXTRA_PREFILL_INGREDIENTS, ingredients);
+        intent.putIntegerArrayListExtra(IngredientConfirmActivity.EXTRA_PREFILL_QUANTITIES, quantities);
         startActivity(intent);
     }
 
-    private ArrayList<String> parseIngredients(String result) {
-        ArrayList<String> parsed = new ArrayList<>();
+    private java.util.LinkedHashMap<String, Integer> parseIngredientQuantities(String result) {
+        java.util.LinkedHashMap<String, Integer> parsed = new java.util.LinkedHashMap<>();
         if (result == null || result.isEmpty()) {
             return parsed;
         }
@@ -309,20 +314,129 @@ public class CameraFragment extends Fragment {
             JSONObject root = new JSONObject(result);
             JSONArray array = root.optJSONArray("ingredients");
             if (array != null) {
-                Set<String> unique = new LinkedHashSet<>();
                 for (int i = 0; i < array.length(); i++) {
-                    String item = array.optString(i, "").trim();
-                    if (!item.isEmpty()) {
-                        unique.add(item.toLowerCase(Locale.US));
+                    Object item = array.opt(i);
+                    String name = "";
+                    int quantity = 1;
+                    if (item instanceof JSONObject) {
+                        JSONObject obj = (JSONObject) item;
+                        name = obj.optString("name", "").trim();
+                        quantity = obj.optInt("quantity", 1);
+                    } else if (item != null) {
+                        name = String.valueOf(item).trim();
+                    }
+                    if (!name.isEmpty()) {
+                        if (quantity <= 0) {
+                            quantity = 1;
+                        }
+                        String key = name.toLowerCase(Locale.US);
+                        int current = parsed.getOrDefault(key, 0);
+                        parsed.put(key, current + quantity);
                     }
                 }
-                parsed.addAll(unique);
             }
         } catch (Exception e) {
             Toast.makeText(requireContext(), getString(R.string.error_parsing_json),
                     Toast.LENGTH_SHORT).show();
         }
         return parsed;
+    }
+
+    private String parseSummary(String result, java.util.LinkedHashMap<String, Integer> ingredients) {
+        String summary = "";
+        if (result != null && !result.isEmpty()) {
+            try {
+                JSONObject root = new JSONObject(result);
+                summary = root.optString("summary", "").trim();
+            } catch (Exception ignored) {
+            }
+        }
+        if (summary.isEmpty()) {
+            summary = buildSummaryFromIngredients(ingredients);
+        }
+        if (summary.isEmpty()) {
+            summary = "Scan";
+        }
+        summary = trimSummary(summary);
+        return summary;
+    }
+
+    private String buildSummaryFromIngredients(java.util.LinkedHashMap<String, Integer> ingredients) {
+        if (ingredients == null || ingredients.isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        int count = 0;
+        for (String name : ingredients.keySet()) {
+            if (name == null || name.trim().isEmpty()) {
+                continue;
+            }
+            if (count > 0) {
+                builder.append(", ");
+            }
+            builder.append(name.trim());
+            count++;
+            if (count >= 2) {
+                break;
+            }
+        }
+        String summary = builder.toString().trim();
+        if (summary.length() > 32) {
+            summary = summary.substring(0, 32).trim();
+        }
+        return summary;
+    }
+
+    private String trimSummary(String summary) {
+        if (summary == null) {
+            return "";
+        }
+        String[] parts = summary.trim().split("\\s+");
+        if (parts.length <= 3) {
+            return summary.trim();
+        }
+        return (parts[0] + " " + parts[1] + " " + parts[2]).trim();
+    }
+
+    private void saveRecentScan(String imageUri, String summary) {
+        if (imageUri == null || imageUri.trim().isEmpty()) {
+            return;
+        }
+        com.lvl.homecookai.database.AppDatabase db =
+                com.lvl.homecookai.database.AppDatabase.getDatabase(requireContext());
+        com.lvl.homecookai.database.RecentScanDao dao = db.recentScanDao();
+        new Thread(() -> {
+            dao.insert(new com.lvl.homecookai.database.RecentScan(imageUri, summary, System.currentTimeMillis()));
+            dao.trimToLimit(20);
+        }).start();
+    }
+
+    private String persistImageToCache(Uri imageUri) {
+        if (imageUri == null) {
+            return null;
+        }
+        try (InputStream inputStream =
+                     requireContext().getContentResolver().openInputStream(imageUri)) {
+            if (inputStream == null) {
+                return null;
+            }
+            File cacheDir = new File(requireContext().getCacheDir(), "recent_scans");
+            if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+                return null;
+            }
+            File outFile = File.createTempFile("scan_", ".jpg", cacheDir);
+            try (FileOutputStream outputStream = new FileOutputStream(outFile)) {
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, read);
+                }
+            }
+            return "file://" + outFile.getAbsolutePath();
+        } catch (Exception e) {
+            Log.e("CameraFragment", "Failed to cache image", e);
+            return imageUri.toString();
+        }
     }
 
     private File createImageFile() {

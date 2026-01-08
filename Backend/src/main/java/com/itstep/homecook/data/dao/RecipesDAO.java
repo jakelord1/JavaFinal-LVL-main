@@ -47,7 +47,7 @@ public class RecipesDAO {
         FROM Recipes rec
         LEFT JOIN Recipe_Positions rec_pos ON rec_pos.recipe_id = rec.id
         LEFT JOIN Ingredients ing ON ing.id = rec_pos.ingredient_id
-        LIMIT ?,100
+        LIMIT ?,500
     """;
 
     try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -74,7 +74,7 @@ public class RecipesDAO {
             }
 
             int posId = rs.getInt("position_id");
-            if (posId > 0) { // если у рецепта есть позиции
+            if (posId > 0) { 
                 Recipe_Positions pos = new Recipe_Positions();
                 pos.setId(posId);
                 pos.setIngredient_id(rs.getInt("position_ingredient_id"));
@@ -151,8 +151,8 @@ public class RecipesDAO {
         List<Integer> ids = new ArrayList<>();
         try (PreparedStatement prep = connection.prepareStatement(findIdsSql)) {
             int index = 1;
-            for (Integer id : ingredientIds) prep.setInt(index++, id); // Для NOT IN
-            for (Integer id : ingredientIds) prep.setInt(index++, id); // Для IN
+            for (Integer id : ingredientIds) prep.setInt(index++, id); 
+            for (Integer id : ingredientIds) prep.setInt(index++, id); 
 
             try (ResultSet rs = prep.executeQuery()) {
                 while (rs.next()) ids.add(rs.getInt("id"));

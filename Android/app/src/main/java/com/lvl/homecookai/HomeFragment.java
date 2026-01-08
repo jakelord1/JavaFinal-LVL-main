@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.lvl.homecookai.ApiSetup.ApiAccess;
 import com.lvl.homecookai.ApiSetup.MethodsToApi;
+import com.lvl.homecookai.database.AppDatabase;
 import com.lvl.homecookai.database.Recipe;
+import com.lvl.homecookai.database.RecentScan;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,10 @@ public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
     private MethodsToApi api;
     private HomeRecipeAdapter recommendedAdapter;
+    private RecentScansAdapter recentScansAdapter;
+    private RecyclerView recentScansList;
+    private View recentScansEmpty;
+    private View recentScansEmptyCard;
 
     @Nullable
     @Override
@@ -45,6 +51,9 @@ public class HomeFragment extends Fragment {
         View confirmIngredientsButton = view.findViewById(R.id.confirm_ingredients_button);
         View profileIcon = view.findViewById(R.id.profile_icon);
         RecyclerView recommendedList = view.findViewById(R.id.recommended_list);
+        recentScansList = view.findViewById(R.id.recent_scans_list);
+        recentScansEmpty = view.findViewById(R.id.recent_scans_empty);
+        recentScansEmptyCard = view.findViewById(R.id.recent_scans_empty_card);
 
         if (confirmIngredientsButton != null) {
             confirmIngredientsButton.setOnClickListener(v ->
@@ -66,46 +75,59 @@ public class HomeFragment extends Fragment {
             recommendedList.setAdapter(recommendedAdapter);
             loadRecommendedFromApi();
         }
+
+        if (recentScansList != null) {
+            recentScansList.setLayoutManager(
+                    new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+            recentScansAdapter = new RecentScansAdapter(scan -> deleteRecentScan(scan.getId()));
+            recentScansList.setAdapter(recentScansAdapter);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadRecentScans();
     }
 
     private void submitSearch(String query) {
-        //Метод для поиска рецептов по имени(для поиска)
-        //api = ApiAccess.getClient().create(MethodsToApi.class);
-        //api.getRecipeByName("name", searchName).enqueue(new Callback<List<Recipe>>() {
-        //    @Override
-        //    public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-        //        if (response.isSuccessful() && response.body() != null) {
-        //            List<Recipe> recipes = response.body();
-        //
-        //            if (recipes.isEmpty()) {
-        //                Toast.makeText(SearchActivity.this,
-        //                        "Рецептов не найдено", Toast.LENGTH_SHORT).show();
-        //            } else {
-        //                // например, передаем список в RecyclerView
-        //                recipesAdapter.setRecipes(recipes);
-        //            }
-        //        }
-        //    }
-        //
-        //    @Override
-        //    public void onFailure(Call<List<Recipe>> call, Throwable t) {
-        //        Toast.makeText(SearchActivity.this,
-        //                "Ошибка поиска рецептов", Toast.LENGTH_SHORT).show();
-        //        Log.e("API_ERROR", "Ошибка при поиске: " + t.getMessage(), t);
-        //    }
-        //});
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
-        //        if (ingredients.isEmpty()) {
-        //            Toast.makeText(requireContext(), getString(R.string.enter_ingredients_first),
-        //                    Toast.LENGTH_SHORT).show();
-        //            return;
-        //        }
-        //
-        //        Intent intent = new Intent(requireContext(), MatchResultsActivity.class);
-        //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        //        intent.putStringArrayListExtra(MatchResultsActivity.EXTRA_INGREDIENTS,
-        //                new ArrayList<>(ingredients));
-        //        startActivity(intent);
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     }
 
     private void loadRecommendedFromApi() {
@@ -147,30 +169,70 @@ public class HomeFragment extends Fragment {
         intent.putExtra("recipe_id", recipe.getId());
         startActivity(intent);
     }
-    //Метод для получения всех рецептов(для показа элементов на глав. странице)
-    //api.getAllRecipes("all", 1).enqueue(new Callback<List<Recipe>>() {
-    //        @Override
-    //        public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-    //            if (response.isSuccessful() && response.body() != null) {
-    //                List<Recipe> recipes = response.body();
-    //
-    //                // например, выводим названия в лог
-    //                for (Recipe recipe : recipes) {
-    //                    Log.d("API", "Рецепт: " + recipe.getDish_name());
-    //                }
-    //
-    //                // здесь можно передать список в RecyclerView адаптер
-    //                recipesAdapter.setRecipes(recipes);
-    //            }
-    //        }
-    //
-    //        @Override
-    //        public void onFailure(Call<List<Recipe>> call, Throwable t) {
-    //            Toast.makeText(MainActivity.this,
-    //                    "Ошибка загрузки списка рецептов", Toast.LENGTH_SHORT).show();
-    //            Log.e("API_ERROR", "Ошибка при запросе списка: " + t.getMessage(), t);
-    //        }
-    //    });
+
+    private void loadRecentScans() {
+        if (recentScansAdapter == null || getContext() == null) {
+            return;
+        }
+        android.content.Context context = getContext();
+        new Thread(() -> {
+            AppDatabase db = AppDatabase.getDatabase(context);
+            List<RecentScan> scans = db.recentScanDao().getRecent(10);
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    recentScansAdapter.setItems(scans);
+                    boolean isEmpty = scans == null || scans.isEmpty();
+                    if (recentScansEmpty != null) {
+                        recentScansEmpty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+                    }
+                    if (recentScansEmptyCard != null) {
+                        recentScansEmptyCard.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+                    }
+                    if (recentScansList != null) {
+                        recentScansList.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private void deleteRecentScan(int scanId) {
+        if (getContext() == null) {
+            return;
+        }
+        android.content.Context context = getContext();
+        new Thread(() -> {
+            AppDatabase db = AppDatabase.getDatabase(context);
+            db.recentScanDao().deleteById(scanId);
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(this::loadRecentScans);
+            }
+        }).start();
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 }
 

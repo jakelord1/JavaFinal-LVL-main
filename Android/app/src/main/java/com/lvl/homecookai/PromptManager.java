@@ -18,28 +18,34 @@ public class PromptManager {
                 "Analyze this image and identify ALL the ingredients you can see. " +
                 "Return ONLY a valid JSON object (no markdown, no extra text) with this exact structure:\n" +
                 "{\n" +
-                "  \"ingredients\": [\"ingredient1\", \"ingredient2\", \"ingredient3\", ...]\n" +
+                "  \"summary\": \"2-3 word description\",\n" +
+                "  \"ingredients\": [\n" +
+                "    {\"name\": \"ingredient1\", \"quantity\": 1},\n" +
+                "    {\"name\": \"ingredient2\", \"quantity\": 2}\n" +
+                "  ]\n" +
                 "}\n" +
+                "Summary: 2-3 words, short and clear (e.g., \"tomatoes and basil\"). " +
                 "List each ingredient once, use common names (e.g., 'tomato' instead of 'ripe red tomato'). " +
+                "If quantity is unclear, use 1. " +
                 "If no ingredients found, return: {\"ingredients\": []}");
 
-//                "Analyze this image and identify ALL ingredients you can see. " +
-//                        "You have this list of known ingredients from the database:  \n" +
-//                        "{ \"ingredients\": [ { \"id\": 1, \"name\": \"Tomato\" }, { \"id\": 2, \"name\": \"Onion\" }, ... ] }  \n" +
-//                        "\n" +
-//                        "Return ONLY a valid JSON object (no markdown, no extra text) with this exact structure:\n" +
-//                        "[\n" +
-//                        "  {\n" +
-//                        "    \"ingredientId\": <id from database>,\n" +
-//                        "    \"amount\": <number>,\n" +
-//                        "    \"unit\": \"<g|pcs|ml>\",\n" +
-//                        "    \"notes\": \"<optional notes>\"\n" +
-//                        "  },\n" +
-//                        "  ...\n" +
-//                        "]\n" +
-//                        "\n" +
-//                        "Match detected ingredients to the provided database IDs.  \n" +
-//                        "If no ingredients found, return: []"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     public void savePrompt(String prompt) {

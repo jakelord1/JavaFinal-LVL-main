@@ -43,7 +43,7 @@ public class GeminiService {
         }
 
         GenerativeModel gm = new GenerativeModel(
-                "gemini-2.5-flash-lite",
+                "gemini-3-flash",
                 BuildConfig.GEMINI_API_KEY
         );
         GenerativeModelFutures model = GenerativeModelFutures.from(gm);
@@ -163,51 +163,51 @@ public class GeminiService {
 
 
 
-//                    api.getAllIngredients().enqueue(new Callback<List<Ingredient>>() {
-//                @Override
-//                public void onResponse(Call<List<Ingredient>> call, Response<List<Ingredient>> response) {
-//                    if (response.isSuccessful() && response.body() != null) {
-//                        List<Ingredient> ingredients = response.body();
-//                        Map<Integer, String> compressedDict = new LinkedHashMap<>();
-//                        for (Ingredient ing : ingredients) {
-//                            compressedDict.put(ing.getId(), ing.getName());
-//                        }
-//                        Map<String, Object> wrapper = new HashMap<>();
-//                        wrapper.put("ingredients", compressedDict);
-//                        String ingredientsJson = new Gson().toJson(wrapper);
-//                        Log.d("API", "Compressed JSON: " + ingredientsJson);
-//                    }
-//                }
-//
-//
-//                @Override
-//                public void onFailure(Call<List<Ingredient>> call, Throwable t) {
-//                    Log.e("API", "Ошибка загрузки ингредиентов", t);
-//                }
-//            });
-//
-//
-//
-//
-//            Content content = new Content.Builder()
-//                    .addImage(bitmap)
-//                    .addText(textPrompt)
-//                    .build();
-//
-//            ListenableFuture<GenerateContentResponse> response = model.generateContent(content);
-//
-//            return Futures.transform(response, it -> {
-//                if (it == null) {
-//                    return "Error: Empty response.";
-//                }
-//                String text = it.getText();
-//                if (text == null) {
-//                    return "Error: No text found in response.";
-//                }
-//                return text;
-//            }, Executors.newSingleThreadExecutor());
-//        } catch (Exception e) {
-//            return Futures.immediateFailedFuture(e);
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

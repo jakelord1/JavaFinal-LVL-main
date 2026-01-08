@@ -8,7 +8,12 @@
     <string name="instructions">Instructions</string>
     <string name="start_cooking">Start Cooking</string>
     <string name="save_recipe">Save Recipe</string>
+    <string name="recipe_saved">Recipe saved to history</string>
+    <string name="recipe_removed">Recipe removed from history</string>
     <string name="recipe_image">Recipe image</string>
+    <string name="minutes_short">мин</string>
+    <string name="error_loading_recipe">Не удалось загрузить рецепт. Попробуйте позже.</string>
+    <string name="recipe_not_loaded">Рецепт еще не загружен</string>
 
     <string name="scan_ingredients">Scan Ingredients</string>
     <string name="camera_instruction">Point your camera at the ingredients you want to use. The app will recognize them and suggest recipes.</string>
@@ -53,6 +58,12 @@
     <string name="profile_weekly_goal">Weekly goal</string>
     <string name="profile_weekly_goal_value">2 of 5 recipes cooked</string>
     <string name="profile_recent_activity">Recent activity</string>
+    <string name="profile_name_hint">Your name</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="profile_pref_hint">Preferences</string>
+    <string name="remove">Remove</string>
+    <string name="processing_photo">Processing photo...</string>
+    <string name="recent_scans_empty">Scan a photo and it will show up here.</string>
     <string name="profile_activity_saved">Saved 3 new recipes</string>
     <string name="profile_activity_scanned">Scanned pantry items</string>
     <string name="profile_activity_cooked">Cooked: Veggie stir-fry</string>

@@ -83,14 +83,17 @@
 
         <TextView
             android:id="@+id/ingredient_quantity"
-            android:layout_width="44dp"
+            android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:text="0"
             android:gravity="center"
             android:textColor="#1a1a1a"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:background="@android:color/transparent" />
+            android:background="@android:color/transparent"
+            android:minWidth="44dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
 
         <ImageButton
             android:id="@+id/ingredient_plus_button"

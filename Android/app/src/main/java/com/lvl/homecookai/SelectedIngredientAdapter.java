@@ -23,15 +23,18 @@ public class SelectedIngredientAdapter extends RecyclerView.Adapter<SelectedIngr
         void onRemoveClicked(Ingredient ingredient);
         void onIncrementClicked(Ingredient ingredient);
         void onDecrementClicked(Ingredient ingredient);
+        void onQuantityClicked(Ingredient ingredient, int currentQuantity, String unit);
     }
 
     public static class SelectedIngredientItem {
         public final Ingredient ingredient;
         public final int quantity;
+        public final String unit;
 
-        public SelectedIngredientItem(Ingredient ingredient, int quantity) {
+        public SelectedIngredientItem(Ingredient ingredient, int quantity, String unit) {
             this.ingredient = ingredient;
             this.quantity = quantity;
+            this.unit = unit;
         }
     }
 
@@ -39,11 +42,18 @@ public class SelectedIngredientAdapter extends RecyclerView.Adapter<SelectedIngr
         this.listener = listener;
     }
 
-    public void setItems(Map<Ingredient, Integer> selectedIngredients) {
+    public void setItems(Map<Ingredient, Integer> selectedIngredients, Map<Ingredient, String> selectedUnits) {
         items.clear();
         if (selectedIngredients != null) {
             for (Map.Entry<Ingredient, Integer> entry : selectedIngredients.entrySet()) {
-                items.add(new SelectedIngredientItem(entry.getKey(), entry.getValue()));
+                String unit = "pcs";
+                if (selectedUnits != null) {
+                    String selectedUnit = selectedUnits.get(entry.getKey());
+                    if (selectedUnit != null && !selectedUnit.trim().isEmpty()) {
+                        unit = selectedUnit.trim();
+                    }
+                }
+                items.add(new SelectedIngredientItem(entry.getKey(), entry.getValue(), unit));
             }
         }
         notifyDataSetChanged();
@@ -86,7 +96,7 @@ public class SelectedIngredientAdapter extends RecyclerView.Adapter<SelectedIngr
 
         void bind(SelectedIngredientItem item, OnQuantityActionListener listener) {
             chipText.setText(item.ingredient.getName());
-            chipQuantity.setText(String.valueOf(item.quantity));
+            chipQuantity.setText(formatQuantity(item.quantity, item.unit));
             removeButton.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onRemoveClicked(item.ingredient);
@@ -102,6 +112,16 @@ public class SelectedIngredientAdapter extends RecyclerView.Adapter<SelectedIngr
                     listener.onIncrementClicked(item.ingredient);
                 }
             });
+            chipQuantity.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onQuantityClicked(item.ingredient, item.quantity, item.unit);
+                }
+            });
         }
+    }
+
+    private static String formatQuantity(int quantity, String unit) {
+        String safeUnit = unit == null || unit.trim().isEmpty() ? "pcs" : unit.trim();
+        return quantity + " " + safeUnit;
     }
 }
