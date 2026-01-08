@@ -32,7 +32,7 @@ const RecipeForm = () => {
     .catch(err => console.error(err));
 
   if (isEditing) {
-    fetch(`${API_URL}:8080/homecook/recipes?id=${id}`, { method: 'GET', })
+    fetch(`${API_URL}:8080/homecook/recipes?type=id&id=${id}`, { method: 'GET', })
       .then(res => res.json())
       .then(recipe => {
         setFormData(recipe);
