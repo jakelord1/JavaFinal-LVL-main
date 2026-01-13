@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_GALLERY = 2;
     private static final int PERMISSION_CAMERA = 100;
     private static final int PERMISSION_READ_STORAGE = 101;
+    private static final int PERMISSION_POST_NOTIFICATIONS = 102;
 
     private BottomNavigationView bottomNavigation;
     private FragmentManager fragmentManager;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private String currentImageUri;
     private GeminiService geminiService;
     private PromptManager promptManager;
+    private String pendingNotificationSummary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         promptManager = new PromptManager(this);
         scanFoodButton = findViewById(R.id.fab_scan_food);
         processingOverlay = findViewById(R.id.home_processing_overlay);
+        NotificationUtils.ensureChannel(this);
 
         makeImageViewsCircular();
 
@@ -270,7 +273,9 @@ public class MainActivity extends AppCompatActivity {
                         String summary = parseSummary(cleanedJson, parsed);
                         saveRecentScan(currentImageUri, summary);
                         setProcessing(false);
-                        openIngredientConfirm(new ArrayList<>(parsed.keySet()), new ArrayList<>(parsed.values()));
+                        showProcessingDialog(summary,
+                                new ArrayList<>(parsed.keySet()),
+                                new ArrayList<>(parsed.values()));
                     }
 
                     @Override
@@ -287,6 +292,18 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    private void tryShowProcessingNotification(String summary) {
+        if (NotificationUtils.canPostNotifications(this)) {
+            NotificationUtils.showProcessingComplete(this, summary);
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pendingNotificationSummary = summary;
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    PERMISSION_POST_NOTIFICATIONS);
+        }
+    }
+
     private void setProcessing(boolean show) {
         if (processingOverlay == null) {
             return;
@@ -300,6 +317,25 @@ public class MainActivity extends AppCompatActivity {
         intent.putStringArrayListExtra(IngredientConfirmActivity.EXTRA_PREFILL_INGREDIENTS, ingredients);
         intent.putIntegerArrayListExtra(IngredientConfirmActivity.EXTRA_PREFILL_QUANTITIES, quantities);
         startActivity(intent);
+    }
+
+    private void showProcessingDialog(String summary,
+                                      ArrayList<String> ingredients,
+                                      ArrayList<Integer> quantities) {
+        String message;
+        if (summary == null || summary.trim().isEmpty()) {
+            message = getString(R.string.dialog_photo_processed_message_fallback);
+        } else {
+            message = getString(R.string.dialog_photo_processed_message, summary.trim());
+        }
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.dialog_photo_processed_title))
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.dialog_photo_processed_positive),
+                        (dialog, which) -> openIngredientConfirm(ingredients, quantities))
+                .setNegativeButton(getString(R.string.dialog_photo_processed_negative), null)
+                .setOnDismissListener(dialog -> tryShowProcessingNotification(summary))
+                .show();
     }
 
     private void openMatchResults(List<String> ingredients) {
@@ -490,6 +526,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, getString(R.string.storage_permission_denied),
                         Toast.LENGTH_SHORT).show();
             }
+        } else if (requestCode == PERMISSION_POST_NOTIFICATIONS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                NotificationUtils.showProcessingComplete(this, pendingNotificationSummary);
+            }
+            pendingNotificationSummary = null;
         }
     }
 

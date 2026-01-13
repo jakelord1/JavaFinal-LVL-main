@@ -50,6 +50,7 @@ public class CameraFragment extends Fragment {
     private static final int REQUEST_GALLERY = 2;
     private static final int PERMISSION_CAMERA = 100;
     private static final int PERMISSION_READ_STORAGE = 101;
+    private static final int PERMISSION_POST_NOTIFICATIONS = 102;
 
     private ImageView cameraPreview;
     private MaterialButton takePhotoBtn;
@@ -62,6 +63,7 @@ public class CameraFragment extends Fragment {
     private String currentImageUri;
     private GeminiService geminiService;
     private PromptManager promptManager;
+    private String pendingNotificationSummary;
 
     @Nullable
     @Override
@@ -85,6 +87,7 @@ public class CameraFragment extends Fragment {
         initializeViews(view);
         geminiService = new GeminiService();
         promptManager = new PromptManager(requireContext());
+        NotificationUtils.ensureChannel(requireContext());
 
         setupButtonAnimations();
         
@@ -260,7 +263,9 @@ public class CameraFragment extends Fragment {
                             java.util.LinkedHashMap<String, Integer> parsed = parseIngredientQuantities(cleanedJson);
                             String summary = parseSummary(cleanedJson, parsed);
                             saveRecentScan(currentImageUri, summary);
-                            openIngredientConfirm(new ArrayList<>(parsed.keySet()), new ArrayList<>(parsed.values()));
+                            showProcessingDialog(summary,
+                                    new ArrayList<>(parsed.keySet()),
+                                    new ArrayList<>(parsed.values()));
                         }
                     }
 
@@ -286,6 +291,18 @@ public class CameraFragment extends Fragment {
         );
     }
 
+    private void tryShowProcessingNotification(String summary) {
+        if (NotificationUtils.canPostNotifications(requireContext())) {
+            NotificationUtils.showProcessingComplete(requireContext(), summary);
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pendingNotificationSummary = summary;
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    PERMISSION_POST_NOTIFICATIONS);
+        }
+    }
+
     private String extractJson(String input) {
         if (input == null) return "";
 
@@ -303,6 +320,25 @@ public class CameraFragment extends Fragment {
         intent.putStringArrayListExtra(IngredientConfirmActivity.EXTRA_PREFILL_INGREDIENTS, ingredients);
         intent.putIntegerArrayListExtra(IngredientConfirmActivity.EXTRA_PREFILL_QUANTITIES, quantities);
         startActivity(intent);
+    }
+
+    private void showProcessingDialog(String summary,
+                                      ArrayList<String> ingredients,
+                                      ArrayList<Integer> quantities) {
+        String message;
+        if (summary == null || summary.trim().isEmpty()) {
+            message = getString(R.string.dialog_photo_processed_message_fallback);
+        } else {
+            message = getString(R.string.dialog_photo_processed_message, summary.trim());
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.dialog_photo_processed_title))
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.dialog_photo_processed_positive),
+                        (dialog, which) -> openIngredientConfirm(ingredients, quantities))
+                .setNegativeButton(getString(R.string.dialog_photo_processed_negative), null)
+                .setOnDismissListener(dialog -> tryShowProcessingNotification(summary))
+                .show();
     }
 
     private java.util.LinkedHashMap<String, Integer> parseIngredientQuantities(String result) {
@@ -471,6 +507,11 @@ public class CameraFragment extends Fragment {
             } else {
                 Toast.makeText(requireContext(), getString(R.string.storage_permission_denied), Toast.LENGTH_SHORT).show();
             }
+        } else if (requestCode == PERMISSION_POST_NOTIFICATIONS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                NotificationUtils.showProcessingComplete(requireContext(), pendingNotificationSummary);
+            }
+            pendingNotificationSummary = null;
         }
     }
 }

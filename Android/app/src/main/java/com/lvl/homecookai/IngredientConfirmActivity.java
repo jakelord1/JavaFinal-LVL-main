@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.lvl.homecookai.ApiSetup.ApiAccess;
 import com.lvl.homecookai.ApiSetup.MethodsToApi;
 import com.lvl.homecookai.database.AppDatabase;
@@ -104,7 +105,7 @@ public class IngredientConfirmActivity extends AppCompatActivity {
         ingredientDao = database.ingredientDao();
 
         initializeViews();
-        
+
         loadIngredientsFromAPI();
     }
 

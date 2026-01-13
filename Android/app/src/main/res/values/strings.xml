@@ -95,4 +95,14 @@
     <string name="products_found">Были найдены продукты</string>
     <string name="recognition_failed">Не удалось распознать</string>
     <string name="error_occurred">Произошла ошибка: %1$s</string>
+    <string name="notification_channel_name">Scan results</string>
+    <string name="notification_channel_description">Notifies when a photo scan is complete.</string>
+    <string name="notification_photo_processed_title">Photo processed</string>
+    <string name="notification_photo_processed_text">Ingredients ready: %1$s</string>
+    <string name="notification_photo_processed_text_fallback">Ingredients are ready to review.</string>
+    <string name="dialog_photo_processed_title">Photo processed</string>
+    <string name="dialog_photo_processed_message">Ingredients were detected: %1$s. Review them now?</string>
+    <string name="dialog_photo_processed_message_fallback">Ingredients were detected. Review them now?</string>
+    <string name="dialog_photo_processed_positive">Review</string>
+    <string name="dialog_photo_processed_negative">Not now</string>
 </resources>
